@@ -1,5 +1,5 @@
 {
-  "name": "webflow-js-starter",
+  "name": "bank-australia-blog-webflow",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -29,6 +29,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@finsweet/ts-utils": "^0.40.0"
+    "@finsweet/ts-utils": "^0.40.0",
+    "swiper": "^11.0.7"
   }
 }
