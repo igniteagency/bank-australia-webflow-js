@@ -24,7 +24,7 @@ export function initArticlesSlider() {
       return;
     }
 
-    const articleSlider = new Swiper(swiperEl, {
+    new Swiper(swiperEl, {
       modules: [Navigation],
       loop: false,
       slidesPerView: 1,
