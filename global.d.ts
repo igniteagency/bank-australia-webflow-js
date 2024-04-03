@@ -7,8 +7,8 @@ declare global {
     JS_SCRIPTS: Set<string> | undefined;
     Webflow: Webflow;
 
-    SCRIPTS_ENV: ENV;
-    setScriptsENV(env: ENV): void;
+    SCRIPTS_ENV: SCRIPTS_ENV;
+    setScriptsENV(env: SCRIPTS_ENV): void;
 
     IS_DEBUG_MODE: boolean;
     setDebugMode(mode: boolean): void;

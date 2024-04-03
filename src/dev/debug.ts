@@ -19,3 +19,12 @@ export function getDebugMode(): boolean {
   }
   return false;
 }
+
+const status = window.IS_DEBUG_MODE ? 'enabled' : 'disabled';
+console.log(`Debug mode is ${status}`);
+
+if (!window.IS_DEBUG_MODE) {
+  console.log(
+    'To enable debug mode and show debug logs, run `window.setDebugMode(true)` in the console'
+  );
+}
