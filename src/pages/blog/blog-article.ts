@@ -1,4 +1,4 @@
-import { initArticlesSlider } from 'src/components/slider';
+import { initArticlesSlider } from 'src/components/blog/slider';
 import Swiper from 'swiper';
 import { Navigation } from 'swiper/modules';
 
