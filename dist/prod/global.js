@@ -1,8 +1,8 @@
 
+// global.js
 if (window.SCRIPTS_ENV === 'dev') {
-  window.loadScript('http://localhost:3000/global.js');
+  window.loadLocalScript('http://localhost:3000/global.js');
 } else {
-  // global.js
   (() => {
   // src/global.ts
   var _a;

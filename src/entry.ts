@@ -9,6 +9,8 @@ import './dev/env';
 
 console.log(`Current mode: ${window.SCRIPTS_ENV}`);
 
+window.EXECUTED_SCRIPT = [];
+
 const SCRIPT_LOAD_PROMISES: Array<Promise<unknown>> = [];
 
 window.loadLocalScript = function (url) {

@@ -1,8 +1,8 @@
 
+// pages/blog/blog-tags.js
 if (window.SCRIPTS_ENV === 'dev') {
-  window.loadScript('http://localhost:3000/pages/blog/blog-tags.js');
+  window.loadLocalScript('http://localhost:3000/pages/blog/blog-tags.js');
 } else {
-  // pages/blog/blog-tags.js
   (() => {
   // src/components/blog/duplicates-remove.ts
   var ARTICLE_SLUG_ATTR = "data-duplicate-check-slug";

@@ -1,8 +1,8 @@
 
+// entry.js
 if (window.SCRIPTS_ENV === 'dev') {
-  window.loadScript('http://localhost:3000/entry.js');
+  window.loadLocalScript('http://localhost:3000/entry.js');
 } else {
-  // entry.js
   (() => {
   // src/constants.ts
   var SCRIPTS_LOADED_EVENT = "scriptsLoaded";
