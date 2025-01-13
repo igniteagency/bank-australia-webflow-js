@@ -11,14 +11,15 @@ const BUILD_DIRECTORY = !production ? DEV_BUILD_PATH : PROD_BUILD_PATH;
 const files = [
   './src/*.ts',
   // './src/components/**/*.ts',
+  './src/components/autoplay-slider.ts',
   './src/pages/**/*.ts',
 ];
 
 const wrapScript = (code, filename) => `
+// ${filename}
 if (window.SCRIPTS_ENV === 'dev') {
-  window.loadScript('http://localhost:3000/${filename}');
+  window.loadLocalScript('http://localhost:3000/${filename}');
 } else {
-  // ${filename}
   ${code.replace(/^"use strict";/, '').trim()}
 }
 `;
@@ -50,10 +51,10 @@ const wrapperPlugin = {
 
           for (const filePath of allFiles) {
             if (filePath.endsWith('.js')) {
-              console.log('Processing file:', filePath);
+              // console.log('Processing file:', filePath);
 
               const code = fs.readFileSync(filePath, 'utf8');
-              console.log('Read file contents successfully');
+              // console.log('Read file contents successfully');
 
               // Get relative path from build directory for the script URL
               const relativePath = path.relative(BUILD_DIRECTORY, filePath);
@@ -86,7 +87,8 @@ const buildSettings = {
   treeShaking: true,
   target: production ? 'es2017' : 'esnext',
   plugins: [wrapperPlugin],
-  format: 'iife',
+  // format: 'iife',
+  external: ['swiper', 'swiper/modules'],
 };
 
 // Function to recursively delete directory contents

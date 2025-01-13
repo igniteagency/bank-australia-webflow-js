@@ -22,6 +22,12 @@ declare global {
      * A wrapper function to directly console log when debug mode is active
      */
     DEBUG: (...args: any[]) => void;
+
+    /**
+     * A list of all the scripts blocks that have been executed
+     * This is used to prevent the same script from being executed multiple times
+     */
+    EXECUTED_SCRIPT: string[];
   }
 
   // Extend `querySelector` and `querySelectorAll` function to stop the nagging of converting `Element` to `HTMLElement` all the time
@@ -29,6 +35,8 @@ declare global {
     querySelector<E extends HTMLElement = HTMLElement>(selectors: string): E | null;
     querySelectorAll<E extends HTMLElement = HTMLElement>(selectors: string): NodeListOf<E>;
   }
+
+  const Swiper: typeof import('swiper').default;
 }
 
 export {};
