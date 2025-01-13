@@ -8,16 +8,85 @@ const production = process.env.NODE_ENV === 'production';
 
 const BUILD_DIRECTORY = !production ? DEV_BUILD_PATH : PROD_BUILD_PATH;
 
-const files = ['./src/*.ts', './src/components/**/*.ts', './src/pages/*.ts'];
+const files = [
+  './src/*.ts',
+  // './src/components/**/*.ts',
+  './src/pages/**/*.ts',
+];
+
+const wrapScript = (code, filename) => `
+if (window.SCRIPTS_ENV === 'dev') {
+  window.loadScript('http://localhost:3000/${filename}');
+} else {
+  // ${filename}
+  ${code.replace(/^"use strict";/, '').trim()}
+}
+`;
+
+// Function to recursively get all files in a directory
+const getAllFiles = (dirPath, arrayOfFiles = []) => {
+  const files = fs.readdirSync(dirPath);
+
+  files.forEach((file) => {
+    const filePath = path.join(dirPath, file);
+    if (fs.statSync(filePath).isDirectory()) {
+      arrayOfFiles = getAllFiles(filePath, arrayOfFiles);
+    } else {
+      arrayOfFiles.push(filePath);
+    }
+  });
+
+  return arrayOfFiles;
+};
+
+const wrapperPlugin = {
+  name: 'wrapper',
+  setup(build) {
+    build.onEnd(async (result) => {
+      if (production) {
+        try {
+          const allFiles = getAllFiles(BUILD_DIRECTORY);
+          console.log('All files found:', allFiles);
+
+          for (const filePath of allFiles) {
+            if (filePath.endsWith('.js')) {
+              console.log('Processing file:', filePath);
+
+              const code = fs.readFileSync(filePath, 'utf8');
+              console.log('Read file contents successfully');
+
+              // Get relative path from build directory for the script URL
+              const relativePath = path.relative(BUILD_DIRECTORY, filePath);
+
+              // Wrap the code
+              const wrappedCode = wrapScript(code, relativePath);
+
+              // Write back to file
+              fs.writeFileSync(filePath, wrappedCode);
+              console.log(
+                `Successfully wrapped ${relativePath} with environment conditional logic`
+              );
+            }
+          }
+        } catch (error) {
+          console.error('Error in wrapper plugin:', error);
+          throw error;
+        }
+      }
+    });
+  },
+};
 
 const buildSettings = {
   entryPoints: files,
   bundle: true,
   outdir: BUILD_DIRECTORY,
-  minify: !production ? false : true,
+  minify: false,
   sourcemap: !production,
   treeShaking: true,
   target: production ? 'es2017' : 'esnext',
+  plugins: [wrapperPlugin],
+  format: 'iife',
 };
 
 // Function to recursively delete directory contents

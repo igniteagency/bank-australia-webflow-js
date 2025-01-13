@@ -2,7 +2,11 @@
 
 This GitHub project provides a development workflow for JavaScript files in Bank Australia Blog site.
 
-In essence, it uses bun to start a development server on [localhost:3000](http://localhost:3000), bundle, build and serve any working file (from the `/src` directory) in local mode. Once pushed up and merged into `main`, it's auto-tagged with the latest semver tag version, and the production code will be auto-loaded from [jsDelivr CDN](https://www.jsdelivr.com/).
+In essence, it uses bun to start a development server on [localhost:3000](http://localhost:3000), bundle, build and serve any working file (from the `/src` directory) in local mode.
+
+The project generates production JS code that can be copied and used in the Webflow site.
+
+Don't directly include any JSDelivr CDN links on the site as we don't have the IT team permission to do so.
 
 ## Install
 
@@ -23,29 +27,14 @@ On starting, update the repo name and URL in this README file, and the `./bin/bu
 
 The project will process and output the files mentioned in the `files` const of `./bin/build.js` file. The output minified files will be in the `./dist/prod` folder for production (pushed to github), and in the `./dist/dev` used for local file serving.
 
-**Keep the repository public for jsDelivr to access and serve the file via CDN**
-
 ### Development
 
-1. The initial `entry.js` file needs to be made available via external server first for this system to work (in the `<head>` area of the site).
-
+1. For localhost testing when developing, can either include the script on the staging site (remember to remove it later), or use browser devtools overrides to add it just for self. Script example:
    ```html
-   <script src="https://cdn.jsdelivr.net/gh/igniteagency/bank-australia-blog-webflow/dist/prod/entry.js"></script>
+   <script src="http://localhost:3000/global.js"></script>
    ```
 
-   For occasional localhost testing when editing `entry.js`, you'll have to manually include that script like following:
-   ```html
-   <script src="http://localhost:3000/entry.js"></script>
-   ```
-
-2. Add scripts to the Webflow site global settings/page-level, as required, by adding the script path to the `window.JS_SCRIPTS` set. **Do not include `/src` in the file path.**
-
-   ```html
-   <script>
-     window.JS_SCRIPTS.add('{FILE_PATH_1}');
-     window.JS_SCRIPTS.add('{FILE_PATH_2}');
-   </script>
-   ```
+   **Do not include `/src` in the file path.**
 
 3. Whilst working locally, run `bun run dev` to start a development server on [localhost:3000](http://localhost:3000)
 
@@ -82,13 +71,5 @@ There is an opt-in debugging setup that turns on logs in the console. The prefer
 
 1. Run `bun run build` to generate the production files in `./dist` folder
 
-2. To push code to production, merge the working branch into `main`. A Github Actions workflow will run tagging that version with an incremented [semver](https://semver.org/)) tag. Once pushed, the production code will be auto loaded from [jsDelivr CDN](https://www.jsdelivr.net/).
+2. To push code to production, merge the working branch into `main`. A Github Actions workflow will run tagging that version with an incremented [semver](https://semver.org/)) tag.
    - By default, the version bump is a patch (`x.y.{{patch number}}`). To bump the version by a higher amount, mention a tag in the commit message, like `#major` or `#minor`
-
-#### jsDelivr Notes & Caveats
-
-- Direct jsDelivr links directly use semver tagged releases when available, else falls back to the master branch [[info discussion link](https://github.com/jsdelivr/jsdelivr/issues/18376#issuecomment-1046876129)]
-- Tagged version branches are purged every 12 hours from their servers [[info discussion link](https://github.com/jsdelivr/jsdelivr/issues/18376#issuecomment-1046918481)]
-- To manually purge a tagged version's files, wait for 10 minutes after the new release tag is added [[info discussion link](https://github.com/jsdelivr/jsdelivr/issues/18376#issuecomment-1047040896)]
-
-[**JSDelivr CDN Purge URL**](https://www.jsdelivr.com/tools/purge)

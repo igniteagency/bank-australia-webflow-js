@@ -1,1 +1,75 @@
-"use strict";(()=>{var r="scriptsLoaded";var s="IS_DEBUG_MODE";window.IS_DEBUG_MODE=E();window.DEBUG=function(...o){window.IS_DEBUG_MODE&&console.log(...o)};window.setDebugMode=o=>{localStorage.setItem(s,o.toString())};function E(){let o=localStorage.getItem(s);return!!(o&&o==="true")}var _=window.IS_DEBUG_MODE?"enabled":"disabled";console.log(`Debug mode is ${_}`);window.IS_DEBUG_MODE||console.log("To enable debug mode and show debug logs, run `window.setDebugMode(true)` in the console");var l="jsEnv",p={dev:"Development",prod:"Production"};window.SCRIPTS_ENV=u();window.setScriptsENV=o=>{if(o!=="dev"&&o!=="prod"){console.error("Invalid environment. Pass `dev` or `prod`");return}localStorage.setItem(l,o),window.SCRIPTS_ENV=o,console.log(`Environment successfully set to ${p[o]}`)};function u(){return localStorage.getItem(l)||"prod"}var c="http://localhost:3000/",I="https://cdn.jsdelivr.net/gh/igniteagency/bank-australia-blog-webflow/dist/prod/";window.JS_SCRIPTS=new Set;var i=[];window.addEventListener("DOMContentLoaded",g);function g(){console.log(`Current mode: ${window.SCRIPTS_ENV}`),window.SCRIPTS_ENV==="dev"?m():d()}function d(){var t;let o=window.SCRIPTS_ENV==="dev"?c:I;(t=window.JS_SCRIPTS)==null||t.forEach(n=>{let e=document.createElement("script");e.src=o+n,e.defer=!0;let S=new Promise((a,w)=>{e.onload=a,e.onerror=()=>{console.error(`Failed to load script: ${n}`)}});i.push(S),document.body.appendChild(e)}),Promise.allSettled(i).then(()=>{window.DEBUG("All scripts loaded"),window.dispatchEvent(new CustomEvent(r))})}function m(){let t=new AbortController,n=setTimeout(()=>{t.abort()},300);fetch(c,{signal:t.signal}).then(e=>{if(!e.ok)throw console.error({response:e}),new Error("localhost response not ok")}).catch(()=>{console.error("localhost not resolved. Switching to production"),window.setScriptsENV("prod")}).finally(()=>{clearTimeout(n),d()})}})();
+
+if (window.SCRIPTS_ENV === 'dev') {
+  window.loadScript('http://localhost:3000/entry.js');
+} else {
+  // entry.js
+  (() => {
+  // src/constants.ts
+  var SCRIPTS_LOADED_EVENT = "scriptsLoaded";
+
+  // src/dev/debug.ts
+  var DEBUG_MODE_LOCALSTORAGE_ID = "IS_DEBUG_MODE";
+  window.IS_DEBUG_MODE = getDebugMode();
+  window.DEBUG = function(...args) {
+    if (window.IS_DEBUG_MODE) {
+      console.log(...args);
+    }
+  };
+  window.setDebugMode = (mode) => {
+    localStorage.setItem(DEBUG_MODE_LOCALSTORAGE_ID, mode.toString());
+  };
+  function getDebugMode() {
+    const localStorageItem = localStorage.getItem(DEBUG_MODE_LOCALSTORAGE_ID);
+    if (localStorageItem && localStorageItem === "true") {
+      return true;
+    }
+    return false;
+  }
+  var status = window.IS_DEBUG_MODE ? "enabled" : "disabled";
+  console.log(`Debug mode is ${status}`);
+  if (!window.IS_DEBUG_MODE) {
+    console.log(
+      "To enable debug mode and show debug logs, run `window.setDebugMode(true)` in the console"
+    );
+  }
+
+  // src/dev/env.ts
+  var ENV_LOCALSTORAGE_ID = "jsEnv";
+  var ENV_NAMES = {
+    dev: "Development",
+    prod: "Production"
+  };
+  window.SCRIPTS_ENV = getENV();
+  window.setScriptsENV = (env) => {
+    if (env !== "dev" && env !== "prod") {
+      console.error("Invalid environment. Pass `dev` or `prod`");
+      return;
+    }
+    localStorage.setItem(ENV_LOCALSTORAGE_ID, env);
+    window.SCRIPTS_ENV = env;
+    console.log(`Environment successfully set to ${ENV_NAMES[env]}`);
+  };
+  function getENV() {
+    const localStorageItem = localStorage.getItem(ENV_LOCALSTORAGE_ID);
+    return localStorageItem || "prod";
+  }
+
+  // src/entry.ts
+  console.log(`Current mode: ${window.SCRIPTS_ENV}`);
+  var SCRIPT_LOAD_PROMISES = [];
+  window.loadLocalScript = function(url) {
+    const promise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = url;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.body.appendChild(script);
+    });
+    SCRIPT_LOAD_PROMISES.push(promise);
+    Promise.allSettled(SCRIPT_LOAD_PROMISES).then(() => {
+      window.DEBUG("All scripts loaded");
+      window.dispatchEvent(new CustomEvent(SCRIPTS_LOADED_EVENT));
+    });
+  };
+})();
+}

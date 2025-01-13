@@ -10,6 +10,12 @@ declare global {
     SCRIPTS_ENV: SCRIPTS_ENV;
     setScriptsENV(env: SCRIPTS_ENV): void;
 
+    /**
+     * Loads script from localhost for the set production code file in dev mode
+     * @param url URL of the script to load
+     */
+    loadLocalScript(url: string): void;
+
     IS_DEBUG_MODE: boolean;
     setDebugMode(mode: boolean): void;
     /**
