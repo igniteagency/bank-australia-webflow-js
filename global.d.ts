@@ -36,7 +36,17 @@ declare global {
     querySelectorAll<E extends HTMLElement = HTMLElement>(selectors: string): NodeListOf<E>;
   }
 
-  const Swiper: typeof import('swiper').default;
+  declare const Swiper: typeof import('swiper').default;
+  type SwiperModule =
+    | typeof import('swiper').Navigation
+    | typeof import('swiper').Pagination
+    | typeof import('swiper').Autoplay
+    | typeof import('swiper').A11y;
+
+  declare const Navigation: SwiperModule;
+  declare const Pagination: SwiperModule;
+  declare const Autoplay: SwiperModule;
+  declare const A11y: SwiperModule;
 }
 
 export {};

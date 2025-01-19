@@ -24,8 +24,12 @@ window.loadLocalScript = function (url) {
 
   SCRIPT_LOAD_PROMISES.push(promise);
 
-  Promise.allSettled(SCRIPT_LOAD_PROMISES).then(() => {
-    window.DEBUG('All scripts loaded');
-    window.dispatchEvent(new CustomEvent(SCRIPTS_LOADED_EVENT));
-  });
+  Promise.allSettled(SCRIPT_LOAD_PROMISES)
+    .then(() => {
+      window.DEBUG('All scripts loaded');
+      window.dispatchEvent(new CustomEvent(SCRIPTS_LOADED_EVENT));
+    })
+    .catch((error) => {
+      console.error('Error loading local scripts', error);
+    });
 };

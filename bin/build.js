@@ -1,6 +1,7 @@
 import esbuild from 'esbuild';
 import fs from 'fs';
 import path from 'path';
+import { LOCAL_SCRIPT_URL } from 'src/constants';
 
 const DEV_BUILD_PATH = './dist/dev';
 const PROD_BUILD_PATH = './dist/prod';
@@ -18,7 +19,7 @@ const files = [
 const wrapScript = (code, filename) => `
 // ${filename}
 if (window.SCRIPTS_ENV === 'dev') {
-  window.loadLocalScript('http://localhost:3000/${filename}');
+  window.loadLocalScript('${LOCAL_SCRIPT_URL}${filename}');
 } else {
   ${code.replace(/^"use strict";/, '').trim()}
 }

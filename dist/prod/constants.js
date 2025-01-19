@@ -6,5 +6,6 @@ if (window.SCRIPTS_ENV === 'dev') {
   (() => {
   // src/constants.ts
   var SCRIPTS_LOADED_EVENT = "scriptsLoaded";
+  var LOCAL_SCRIPT_URL = "http://localhost:3000/";
 })();
 }

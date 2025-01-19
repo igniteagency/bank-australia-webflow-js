@@ -56,6 +56,7 @@ if (window.SCRIPTS_ENV === 'dev') {
 
   // src/entry.ts
   console.log(`Current mode: ${window.SCRIPTS_ENV}`);
+  window.EXECUTED_SCRIPT = [];
   var SCRIPT_LOAD_PROMISES = [];
   window.loadLocalScript = function(url) {
     const promise = new Promise((resolve, reject) => {
@@ -69,6 +70,8 @@ if (window.SCRIPTS_ENV === 'dev') {
     Promise.allSettled(SCRIPT_LOAD_PROMISES).then(() => {
       window.DEBUG("All scripts loaded");
       window.dispatchEvent(new CustomEvent(SCRIPTS_LOADED_EVENT));
+    }).catch((error) => {
+      console.error("Error loading local scripts", error);
     });
   };
 })();
