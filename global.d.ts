@@ -47,6 +47,9 @@ declare global {
   declare const Pagination: SwiperModule;
   declare const Autoplay: SwiperModule;
   declare const A11y: SwiperModule;
+
+  declare const gsap: typeof import('gsap');
+  declare const ScrollTrigger: typeof import('gsap/ScrollTrigger');
 }
 
 export {};
