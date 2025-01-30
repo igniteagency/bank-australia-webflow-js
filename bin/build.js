@@ -14,6 +14,7 @@ const files = [
   // './src/components/**/*.ts',
   './src/components/autoplay-slider.ts',
   './src/pages/**/*.ts',
+  './src/utils/**/*.ts',
 ];
 
 const wrapScript = (code, filename) => `// ${filename}
