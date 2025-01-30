@@ -1,4 +1,3 @@
-
 // entry.js
 if (window.SCRIPTS_ENV === 'dev') {
   window.loadLocalScript('http://localhost:3000/entry.js');
@@ -50,12 +49,32 @@ if (window.SCRIPTS_ENV === 'dev') {
     console.log(`Environment successfully set to ${ENV_NAMES[env]}`);
   };
   function getENV() {
-    const localStorageItem = localStorage.getItem(ENV_LOCALSTORAGE_ID);
+    let localStorageItem = localStorage.getItem(ENV_LOCALSTORAGE_ID);
+    if (localStorageItem === "dev") {
+      fetch("http://localhost:3000", { method: "HEAD", cache: "no-store" }).catch(() => {
+        console.log("Localhost server is not available, switching to production mode");
+        localStorage.setItem(ENV_LOCALSTORAGE_ID, "prod");
+        localStorageItem = "prod";
+        window.SCRIPTS_ENV = "prod";
+      });
+    }
     return localStorageItem || "prod";
+  }
+  function outputEnvSwitchLog(env) {
+    if ("prod" === env) {
+      console.log(
+        'To switch to dev mode and serve files from localhost, run `window.setScriptsENV("dev")` in the console'
+      );
+    } else {
+      console.log(
+        'To switch to production mode, either run `window.setScriptsENV("prod")` in the console or turn off localhost dev server'
+      );
+    }
   }
 
   // src/entry.ts
   console.log(`Current mode: ${window.SCRIPTS_ENV}`);
+  outputEnvSwitchLog(window.SCRIPTS_ENV);
   window.EXECUTED_SCRIPT = [];
   var SCRIPT_LOAD_PROMISES = [];
   window.loadLocalScript = function(url) {
