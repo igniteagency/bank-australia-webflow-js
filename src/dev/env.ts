@@ -22,7 +22,17 @@ window.setScriptsENV = (env) => {
 };
 
 function getENV(): SCRIPTS_ENV {
-  const localStorageItem = localStorage.getItem(ENV_LOCALSTORAGE_ID) as SCRIPTS_ENV;
+  let localStorageItem = localStorage.getItem(ENV_LOCALSTORAGE_ID) as SCRIPTS_ENV;
+
+  if (localStorageItem === 'dev') {
+    fetch('http://localhost:3000', { method: 'HEAD', cache: 'no-store' }).catch(() => {
+      console.log('Localhost server is not available, switching to production mode');
+      localStorage.setItem(ENV_LOCALSTORAGE_ID, 'prod');
+      localStorageItem = 'prod';
+      window.SCRIPTS_ENV = 'prod';
+    });
+  }
+
   return localStorageItem || 'prod';
 }
 
@@ -33,7 +43,7 @@ export function outputEnvSwitchLog(env: SCRIPTS_ENV) {
     );
   } else {
     console.log(
-      'To switch to production mode and serve files from CDN, either run `window.setScriptsENV("prod")` in the console or turn off localhost dev server'
+      'To switch to production mode, either run `window.setScriptsENV("prod")` in the console or turn off localhost dev server'
     );
   }
 }

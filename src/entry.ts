@@ -6,8 +6,10 @@
 import { SCRIPTS_LOADED_EVENT } from './constants';
 import './dev/debug';
 import './dev/env';
+import { outputEnvSwitchLog } from './dev/env';
 
 console.log(`Current mode: ${window.SCRIPTS_ENV}`);
+outputEnvSwitchLog(window.SCRIPTS_ENV);
 
 window.EXECUTED_SCRIPT = [];
 

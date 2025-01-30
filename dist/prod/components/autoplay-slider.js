@@ -1,10 +1,11 @@
-
 // components/autoplay-slider.js
 if (window.SCRIPTS_ENV === 'dev') {
   window.loadLocalScript('http://localhost:3000/components/autoplay-slider.js');
 } else {
   (() => {
   // src/components/autoplay-slider.ts
+  var AUTOPLAY_DELAY_MS = 5e3;
+  var SLIDER_TRANSITION_SPEED_MS = 750;
   window.Webflow = window.Webflow || [];
   window.Webflow.push(() => {
     if (window.EXECUTED_SCRIPT.includes("autoplay-slider")) {
@@ -26,7 +27,9 @@ if (window.SCRIPTS_ENV === 'dev') {
       const paginationEl = sliderSectionEl.querySelector(PAGINATION_SELECTOR);
       const sliderGapOverrideEl = sliderSectionEl.querySelector(`[${SLIDER_GAP_OVERRIDE_ATTR}]`);
       if (sliderGapOverrideEl) {
-        SLIDER_GAP = parseInt(sliderGapOverrideEl.getAttribute(SLIDER_GAP_OVERRIDE_ATTR) || "80");
+        SLIDER_GAP = parseInt(
+          sliderGapOverrideEl.getAttribute(SLIDER_GAP_OVERRIDE_ATTR) || SLIDER_GAP.toString()
+        );
       }
       if (!swiperEl) {
         console.debug("No swiper element found in the slider section", sliderSectionEl);
@@ -58,19 +61,32 @@ if (window.SCRIPTS_ENV === 'dev') {
       try {
         const swiper = new Swiper(swiperEl, {
           loop: true,
-          slidesPerView: 1,
+          slidesPerView: "auto",
           slidesPerGroup: 1,
+          speed: SLIDER_TRANSITION_SPEED_MS,
           spaceBetween: SLIDER_GAP,
           centeredSlides: true,
+          watchSlidesProgress: true,
           navigation: navigationConfig,
           pagination: paginationConfig,
           slideActiveClass: "is-active",
           slidePrevClass: "is-previous",
           slideNextClass: "is-next",
           autoplay: {
-            delay: 5e3,
+            delay: AUTOPLAY_DELAY_MS,
             disableOnInteraction: false,
             pauseOnMouseEnter: true
+          },
+          on: {
+            init: function(swiper2) {
+              if (paginationEl) {
+                paginationEl.style.setProperty("--autoplay-delay", `${AUTOPLAY_DELAY_MS}ms`);
+                paginationEl.style.setProperty(
+                  "--slider-transition-speed",
+                  `${SLIDER_TRANSITION_SPEED_MS}ms`
+                );
+              }
+            }
           },
           observer: true,
           observeParents: true,

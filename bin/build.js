@@ -14,16 +14,15 @@ const files = [
   // './src/components/**/*.ts',
   './src/components/autoplay-slider.ts',
   './src/pages/**/*.ts',
+  './src/utils/**/*.ts',
 ];
 
-const wrapScript = (code, filename) => `
-// ${filename}
+const wrapScript = (code, filename) => `// ${filename}
 if (window.SCRIPTS_ENV === 'dev') {
   window.loadLocalScript('${LOCAL_SCRIPT_URL}${filename}');
 } else {
   ${code.replace(/^"use strict";/, '').trim()}
-}
-`;
+}`;
 
 // Function to recursively get all files in a directory
 const getAllFiles = (dirPath, arrayOfFiles = []) => {

@@ -1,4 +1,5 @@
-import { SCRIPTS_LOADED_EVENT } from 'src/constants';
+const AUTOPLAY_DELAY_MS = 5000;
+const SLIDER_TRANSITION_SPEED_MS = 750;
 
 window.Webflow = window.Webflow || [];
 window.Webflow.push(() => {
@@ -26,7 +27,9 @@ window.Webflow.push(() => {
     const sliderGapOverrideEl = sliderSectionEl.querySelector(`[${SLIDER_GAP_OVERRIDE_ATTR}]`);
 
     if (sliderGapOverrideEl) {
-      SLIDER_GAP = parseInt(sliderGapOverrideEl.getAttribute(SLIDER_GAP_OVERRIDE_ATTR) || '80');
+      SLIDER_GAP = parseInt(
+        sliderGapOverrideEl.getAttribute(SLIDER_GAP_OVERRIDE_ATTR) || SLIDER_GAP.toString()
+      );
     }
 
     if (!swiperEl) {
@@ -72,19 +75,46 @@ window.Webflow.push(() => {
     try {
       const swiper = new Swiper(swiperEl, {
         loop: true,
-        slidesPerView: 1,
+        slidesPerView: 'auto',
         slidesPerGroup: 1,
+        speed: SLIDER_TRANSITION_SPEED_MS,
         spaceBetween: SLIDER_GAP,
         centeredSlides: true,
+        watchSlidesProgress: true,
         navigation: navigationConfig,
         pagination: paginationConfig,
         slideActiveClass: 'is-active',
         slidePrevClass: 'is-previous',
         slideNextClass: 'is-next',
         autoplay: {
-          delay: 5000,
+          delay: AUTOPLAY_DELAY_MS,
           disableOnInteraction: false,
           pauseOnMouseEnter: true,
+        },
+        on: {
+          init: function (swiper) {
+            if (paginationEl) {
+              paginationEl.style.setProperty('--autoplay-delay', `${AUTOPLAY_DELAY_MS}ms`);
+              paginationEl.style.setProperty(
+                '--slider-transition-speed',
+                `${SLIDER_TRANSITION_SPEED_MS}ms`
+              );
+            }
+
+            // // Add click handler for inactive slides
+            // const slides = swiperEl.querySelectorAll('.swiper-slide');
+            // slides.forEach((slide, index) => {
+            //   slide.addEventListener('click', (e) => {
+            //     e.preventDefault();
+            //     // e.stopPropagation();
+            //     e.stopImmediatePropagation();
+            //     if (!slide.classList.contains('is-active')) {
+            //       console.debug('Inactive slide clicked', slide, index);
+            //       swiper.slideTo(index);
+            //     }
+            //   });
+            // });
+          },
         },
         observer: true,
         observeParents: true,
