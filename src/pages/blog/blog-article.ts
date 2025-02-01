@@ -18,14 +18,14 @@ function initGallerySlider() {
     const navNextButtonEl = sliderSectionEl.querySelector(NAV_NEXT_BUTTON_SELECTOR);
 
     if (!swiperEl) {
-      window.DEBUG('No swiper element found in the slider section', sliderSectionEl);
+      console.debug('No swiper element found in the slider section', sliderSectionEl);
       return;
     }
 
     const slidesCount = swiperEl.querySelectorAll('.swiper-slide').length;
 
     if (!slidesCount) {
-      window.DEBUG('No slides found in the slider. Deleting the section', swiperEl);
+      console.debug('No slides found in the slider. Deleting the section', swiperEl);
       sliderSectionEl.remove();
       return;
     }

@@ -9,7 +9,7 @@ if (window.SCRIPTS_ENV === 'dev') {
   // src/dev/debug.ts
   var DEBUG_MODE_LOCALSTORAGE_ID = "IS_DEBUG_MODE";
   window.IS_DEBUG_MODE = getDebugMode();
-  window.DEBUG = function(...args) {
+  console.debug = function(...args) {
     if (window.IS_DEBUG_MODE) {
       console.log(...args);
     }
@@ -86,12 +86,12 @@ if (window.SCRIPTS_ENV === 'dev') {
       document.body.appendChild(script);
     });
     SCRIPT_LOAD_PROMISES.push(promise);
-    Promise.allSettled(SCRIPT_LOAD_PROMISES).then(() => {
-      window.DEBUG("All scripts loaded");
-      window.dispatchEvent(new CustomEvent(SCRIPTS_LOADED_EVENT));
-    }).catch((error) => {
-      console.error("Error loading local scripts", error);
-    });
   };
+  Promise.allSettled(SCRIPT_LOAD_PROMISES).then(() => {
+    console.debug("All scripts loaded");
+    window.dispatchEvent(new CustomEvent(SCRIPTS_LOADED_EVENT));
+  }).catch((error) => {
+    console.error("Error loading local scripts", error);
+  });
 })();
 }

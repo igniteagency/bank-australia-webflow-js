@@ -11,8 +11,7 @@ const BUILD_DIRECTORY = !production ? DEV_BUILD_PATH : PROD_BUILD_PATH;
 
 const files = [
   './src/*.ts',
-  // './src/components/**/*.ts',
-  './src/components/autoplay-slider.ts',
+  './src/components/**/*.ts',
   './src/pages/**/*.ts',
   './src/utils/**/*.ts',
 ];

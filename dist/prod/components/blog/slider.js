@@ -1,6 +1,6 @@
-// pages/blog/blog-category.js
+// components/blog/slider.js
 if (window.SCRIPTS_ENV === 'dev') {
-  window.loadLocalScript('http://localhost:3000/pages/blog/blog-category.js');
+  window.loadLocalScript('http://localhost:3000/components/blog/slider.js');
 } else {
   (() => {
   var __create = Object.create;
@@ -31,23 +31,6 @@ if (window.SCRIPTS_ENV === 'dev') {
     isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
     mod
   ));
-
-  // src/components/blog/duplicates-remove.ts
-  var ARTICLE_SLUG_ATTR = "data-duplicate-check-slug";
-  function initDuplicateArticlesRemoval() {
-    const articleSlugList = [];
-    document.querySelectorAll(`[${ARTICLE_SLUG_ATTR}]`).forEach((articleItemEl) => {
-      const articleSlug = articleItemEl.getAttribute(ARTICLE_SLUG_ATTR);
-      if (!articleSlug || "" === articleSlug) {
-        return;
-      }
-      if (articleSlugList.includes(articleSlug)) {
-        articleItemEl.remove();
-      } else {
-        articleSlugList.push(articleSlug);
-      }
-    });
-  }
 
   // src/components/blog/slider.ts
   var import_swiper = __toESM(__require("swiper"), 1);
@@ -92,12 +75,5 @@ if (window.SCRIPTS_ENV === 'dev') {
       });
     });
   }
-
-  // src/pages/blog/blog-category.ts
-  var _a;
-  (_a = window.Webflow) == null ? void 0 : _a.push(() => {
-    initDuplicateArticlesRemoval();
-    initArticlesSlider();
-  });
 })();
 }

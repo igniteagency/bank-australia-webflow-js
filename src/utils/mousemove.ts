@@ -22,12 +22,10 @@ window.Webflow.push(() => {
       mousemoveContainerEl.getAttribute('data-mousemove-default-y') || DEFAULT_Y_POS;
 
     mousemoveContainerEl.addEventListener('mouseenter', () => {
-      console.log('mouseenter');
       recalcRect();
     });
 
     mousemoveContainerEl.addEventListener('mousemove', (e) => {
-      console.log('mousemove');
       const relX = e.clientX - rect.left;
       const relY = e.clientY - rect.top;
 
@@ -39,7 +37,6 @@ window.Webflow.push(() => {
     });
 
     mousemoveContainerEl.addEventListener('mouseleave', () => {
-      console.log('mouseleave');
       const tl = gsap.timeline({
         onComplete: () => {
           mousemoveContainerEl.style.removeProperty(MOUSE_X_PROPERTY);

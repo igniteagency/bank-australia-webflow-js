@@ -22,11 +22,9 @@ if (window.SCRIPTS_ENV === 'dev') {
       let defaultXPos = mousemoveContainerEl.getAttribute("data-mousemove-default-x") || DEFAULT_X_POS;
       let defaultYPos = mousemoveContainerEl.getAttribute("data-mousemove-default-y") || DEFAULT_Y_POS;
       mousemoveContainerEl.addEventListener("mouseenter", () => {
-        console.log("mouseenter");
         recalcRect();
       });
       mousemoveContainerEl.addEventListener("mousemove", (e) => {
-        console.log("mousemove");
         const relX = e.clientX - rect.left;
         const relY = e.clientY - rect.top;
         gsap.to(mousemoveContainerEl, {
@@ -36,7 +34,6 @@ if (window.SCRIPTS_ENV === 'dev') {
         });
       });
       mousemoveContainerEl.addEventListener("mouseleave", () => {
-        console.log("mouseleave");
         const tl = gsap.timeline({
           onComplete: () => {
             mousemoveContainerEl.style.removeProperty(MOUSE_X_PROPERTY);
