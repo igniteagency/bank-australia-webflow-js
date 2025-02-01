@@ -63,8 +63,8 @@ You can use that as following:
 
 There is an opt-in debugging setup that turns on logs in the console. The preference can be toggled via browser console, and is stored in browser localStorage.
 
-- Add any console logs in the code using the `window.DEBUG` function. It's a `console.log` wrapper. There is also a `window.IS_DEBUG_MODE` variable to run code conditions on
-- Execute `window.setDebugMode(true)` in the console to turn on Debug mode. After reload, the console will start showing code logs.
+- Add any console logs in the code using the `console.debug` function.
+- Execute `window.setDebugMode(true)` in the console to turn on Debug mode. With that, any conditional code wrapped with `window.DEBUG` can be run only for debugging purposes
 - To turn it off, execute `window.setDebugMode(false)` in the console.
 
 ### Production
