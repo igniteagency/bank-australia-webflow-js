@@ -131,8 +131,6 @@ window.Webflow.push(() => {
         },
       });
 
-      console.debug('Swiper initialized', swiper);
-
       // Handle autoplay button functionality
       if (autoplayButtonEl) {
         let isPlaying = true;

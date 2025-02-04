@@ -11,29 +11,61 @@ if (window.SCRIPTS_ENV === 'dev') {
       return;
     }
     const DIALOG_COMPONENT_SELECTOR = '[data-el="app-download-dialog-component"]';
-    const handleDialogOpen = (component) => {
-      const dialog = component.querySelector("dialog");
+    const DIALOG_CLOSE_SELECTOR = '[data-el="app-download-dialog-close"]';
+    const dialogComponents = document.querySelectorAll(DIALOG_COMPONENT_SELECTOR);
+    dialogComponents.forEach((componentEl) => {
+      const links = componentEl.querySelectorAll("a");
+      links.forEach((link) => {
+        if (isIOS() || isAndroid()) {
+          const downloadLink = isIOS() ? componentEl.getAttribute("data-ios-download-link") : componentEl.getAttribute("data-android-download-link");
+          if (downloadLink) {
+            link.href = downloadLink;
+            return;
+          }
+        } else {
+          link.addEventListener("click", (event) => {
+            handleDialogOpen(componentEl, event);
+          });
+        }
+      });
+    });
+    const handleDialogOpen = (componentEl, event) => {
+      event.preventDefault();
+      const dialog = componentEl.querySelector("dialog");
       if (!dialog) {
         console.error("No dialog element found in the component");
         return;
       }
+      const closeButton = componentEl.querySelector(DIALOG_CLOSE_SELECTOR);
       dialog.showModal();
-      dialog.addEventListener("click", (event) => {
-        if (event.target === dialog) {
-          dialog.close();
+      const handleOutsideClick = (event2) => {
+        if (event2.target === dialog) {
+          closeDialog(dialog);
         }
-      });
+      };
+      const handleCloseClick = () => {
+        closeDialog(dialog);
+      };
+      const handleDialogClose = () => {
+        dialog.classList.remove("closing");
+        dialog.removeEventListener("close", handleDialogClose);
+        dialog.removeEventListener("click", handleOutsideClick);
+        closeButton == null ? void 0 : closeButton.removeEventListener("click", handleCloseClick);
+      };
+      dialog.addEventListener("close", handleDialogClose);
+      dialog.addEventListener("click", handleOutsideClick);
+      closeButton == null ? void 0 : closeButton.addEventListener("click", handleCloseClick);
     };
-    const dialogComponents = document.querySelectorAll(DIALOG_COMPONENT_SELECTOR);
-    dialogComponents.forEach((component) => {
-      const links = component.querySelectorAll("a");
-      links.forEach((link) => {
-        link.addEventListener("click", (event) => {
-          event.preventDefault();
-          handleDialogOpen(component);
-        });
-      });
-    });
+    function closeDialog(dialog) {
+      dialog.classList.add("closing");
+      setTimeout(() => dialog.close(), 400);
+    }
+    function isIOS() {
+      return /iPad|iPhone|iPod/.test(navigator.userAgent) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+    }
+    function isAndroid() {
+      return /Android/.test(navigator.userAgent);
+    }
     window.EXECUTED_SCRIPT.push("app-download-dialog");
   });
 })();
