@@ -11,39 +11,66 @@ window.Webflow.push(() => {
   }
 
   const MOUSEMOVE_CONTAINER_SELECTOR = '[data-mousemove-el="container"]';
-
   const mousemoveContainerList = document.querySelectorAll(MOUSEMOVE_CONTAINER_SELECTOR);
 
   mousemoveContainerList.forEach((mousemoveContainerEl) => {
-    let rect = (mousemoveContainerEl as HTMLElement).getBoundingClientRect();
-    let defaultXPos =
-      mousemoveContainerEl.getAttribute('data-mousemove-default-x') || DEFAULT_X_POS;
-    let defaultYPos =
-      mousemoveContainerEl.getAttribute('data-mousemove-default-y') || DEFAULT_Y_POS;
+    const el = mousemoveContainerEl as HTMLElement;
+    let defaultXPos = el.getAttribute('data-mousemove-default-x') || DEFAULT_X_POS;
+    let defaultYPos = el.getAttribute('data-mousemove-default-y') || DEFAULT_Y_POS;
 
-    mousemoveContainerEl.addEventListener('mouseenter', () => {
-      recalcRect();
-    });
+    // Calculate initial position once
+    const rect = el.getBoundingClientRect();
+    let initialLeft = rect.left + window.scrollX;
+    let initialTop = rect.top + window.scrollY;
 
-    mousemoveContainerEl.addEventListener('mousemove', (e) => {
-      const relX = e.clientX - rect.left;
-      const relY = e.clientY - rect.top;
+    let isMouseOver = false;
+    let rafId: number | null = null;
 
-      gsap.to(mousemoveContainerEl, {
-        [MOUSE_X_PROPERTY]: `${relX}px`,
-        [MOUSE_Y_PROPERTY]: `${relY}px`,
-        duration: 0,
+    const updatePosition = (e: MouseEvent) => {
+      if (!isMouseOver) return;
+
+      // Cancel any pending frame
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
+
+      // Schedule update on next frame
+      rafId = requestAnimationFrame(() => {
+        // Calculate position relative to initial element position, accounting for scroll
+        const relX = e.pageX - initialLeft;
+        const relY = e.pageY - initialTop;
+
+        gsap.to(el, {
+          [MOUSE_X_PROPERTY]: `${relX}px`,
+          [MOUSE_Y_PROPERTY]: `${relY}px`,
+          duration: 0,
+        });
+
+        rafId = null;
       });
+    };
+
+    el.addEventListener('mouseenter', () => {
+      isMouseOver = true;
     });
 
-    mousemoveContainerEl.addEventListener('mouseleave', () => {
+    el.addEventListener('mousemove', updatePosition);
+
+    el.addEventListener('mouseleave', () => {
+      isMouseOver = false;
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+
       const tl = gsap.timeline({
         onComplete: () => {
-          mousemoveContainerEl.style.removeProperty(MOUSE_X_PROPERTY);
-          mousemoveContainerEl.style.removeProperty(MOUSE_Y_PROPERTY);
+          el.style.removeProperty(MOUSE_X_PROPERTY);
+          el.style.removeProperty(MOUSE_Y_PROPERTY);
         },
       });
-      tl.to(mousemoveContainerEl, {
+
+      tl.to(el, {
         [MOUSE_X_PROPERTY]: defaultXPos,
         [MOUSE_Y_PROPERTY]: defaultYPos,
         duration: 0.3,
@@ -51,14 +78,13 @@ window.Webflow.push(() => {
       });
     });
 
-    // recalc rect dimensions on resize
-    window.Webflow?.resize.on(() => {
-      recalcRect();
+    // Clean up on resize since element position may have changed significantly
+    const resizeObserver = new ResizeObserver(() => {
+      const newRect = el.getBoundingClientRect();
+      initialLeft = newRect.left + window.scrollX;
+      initialTop = newRect.top + window.scrollY;
     });
-
-    function recalcRect() {
-      rect = (mousemoveContainerEl as HTMLElement).getBoundingClientRect();
-    }
+    resizeObserver.observe(el);
   });
 
   window.EXECUTED_SCRIPT.push('mousemove');
