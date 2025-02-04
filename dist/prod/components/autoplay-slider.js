@@ -102,7 +102,6 @@ if (window.SCRIPTS_ENV === 'dev') {
             }
           }
         });
-        console.debug("Swiper initialized", swiper);
         if (autoplayButtonEl) {
           let isPlaying = true;
           updateAutoplayButtonState(autoplayButtonEl, isPlaying);
