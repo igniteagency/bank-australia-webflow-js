@@ -153,7 +153,14 @@ window.Webflow.push(() => {
 
   function collapseDisclosureWidgetsWhenClickingOutsideNav(event: MouseEvent): void {
     const target = event.target as HTMLElement;
-    if (target === document.body && !desktopMediaQuery.matches) {
+
+    // Close mobile menu when clicking outside nav
+    if (
+      !desktopMediaQuery.matches &&
+      navContent &&
+      !navContent.contains(target) &&
+      !navButton?.contains(target)
+    ) {
       hideNavContent();
     }
 

@@ -122,7 +122,7 @@ if (window.SCRIPTS_ENV === 'dev') {
     }
     function collapseDisclosureWidgetsWhenClickingOutsideNav(event) {
       const target = event.target;
-      if (target === document.body && !desktopMediaQuery.matches) {
+      if (!desktopMediaQuery.matches && navContent && !navContent.contains(target) && !(navButton == null ? void 0 : navButton.contains(target))) {
         hideNavContent();
       }
       disclosureWidgetPanels.forEach((disclosureWidgetPanel) => {
