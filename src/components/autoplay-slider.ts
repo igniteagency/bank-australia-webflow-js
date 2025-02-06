@@ -92,7 +92,7 @@ window.Webflow.push(() => {
           pauseOnMouseEnter: true,
         },
         on: {
-          init: function (swiper) {
+          init: function (swiperInstance) {
             if (paginationEl) {
               paginationEl.style.setProperty('--autoplay-delay', `${AUTOPLAY_DELAY_MS}ms`);
               paginationEl.style.setProperty(
@@ -101,19 +101,15 @@ window.Webflow.push(() => {
               );
             }
 
-            // // Add click handler for inactive slides
-            // const slides = swiperEl.querySelectorAll('.swiper-slide');
-            // slides.forEach((slide, index) => {
-            //   slide.addEventListener('click', (e) => {
-            //     e.preventDefault();
-            //     // e.stopPropagation();
-            //     e.stopImmediatePropagation();
-            //     if (!slide.classList.contains('is-active')) {
-            //       console.debug('Inactive slide clicked', slide, index);
-            //       swiper.slideTo(index);
-            //     }
-            //   });
-            // });
+            // Add click handler for inactive slides
+            const slides = swiperEl.querySelectorAll('.swiper-slide');
+            slides.forEach((slide, index) => {
+              slide.addEventListener('click', (e) => {
+                if (!slide.classList.contains('is-active')) {
+                  swiperInstance.slideTo(index);
+                }
+              });
+            });
           },
         },
         observer: true,

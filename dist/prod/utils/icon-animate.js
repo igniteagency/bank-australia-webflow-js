@@ -11,43 +11,28 @@ if (window.SCRIPTS_ENV === 'dev') {
       return;
     }
     const ICON_CONTAINER_SELECTOR = "[data-icon-animate]";
-    const observerOptions = {
-      root: null,
-      // use viewport as root
-      threshold: 0.2,
-      // trigger when 20% visible
-      rootMargin: "0px"
-    };
-    const animateIcon = (iconContainer) => {
+    const iconContainers = document.querySelectorAll(ICON_CONTAINER_SELECTOR);
+    iconContainers.forEach((iconContainer) => {
       const duration = iconContainer.getAttribute("data-icon-animate-duration") || "1.5";
       const paths = iconContainer.querySelectorAll("path");
-      gsap.set(paths, {
-        drawSVG: "0%"
+      const durationNum = parseFloat(duration);
+      paths.forEach((path) => {
+        const pathLength = path.getTotalLength();
+        gsap.set(path, {
+          strokeDasharray: pathLength,
+          strokeDashoffset: pathLength
+        });
       });
       gsap.to(paths, {
-        drawSVG: "100%",
-        duration: parseFloat(duration),
-        ease: "power1.inOut",
-        onComplete: () => {
-          observer.unobserve(iconContainer);
-        }
+        scrollTrigger: {
+          trigger: iconContainer,
+          start: "top 90%",
+          once: true
+        },
+        strokeDashoffset: 0,
+        duration: durationNum,
+        ease: "power1.inOut"
       });
-    };
-    const observerCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const hasAnimated = entry.target.getAttribute("data-has-animated");
-          if (!hasAnimated) {
-            entry.target.setAttribute("data-has-animated", "true");
-            animateIcon(entry.target);
-          }
-        }
-      });
-    };
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
-    const iconList = document.querySelectorAll(ICON_CONTAINER_SELECTOR);
-    iconList.forEach((iconEl) => {
-      observer.observe(iconEl);
     });
     window.EXECUTED_SCRIPT.push("icon-animate");
   });

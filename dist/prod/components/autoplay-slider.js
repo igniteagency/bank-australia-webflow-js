@@ -78,7 +78,7 @@ if (window.SCRIPTS_ENV === 'dev') {
             pauseOnMouseEnter: true
           },
           on: {
-            init: function(swiper2) {
+            init: function(swiperInstance) {
               if (paginationEl) {
                 paginationEl.style.setProperty("--autoplay-delay", `${AUTOPLAY_DELAY_MS}ms`);
                 paginationEl.style.setProperty(
@@ -86,6 +86,14 @@ if (window.SCRIPTS_ENV === 'dev') {
                   `${SLIDER_TRANSITION_SPEED_MS}ms`
                 );
               }
+              const slides = swiperEl.querySelectorAll(".swiper-slide");
+              slides.forEach((slide, index) => {
+                slide.addEventListener("click", (e) => {
+                  if (!slide.classList.contains("is-active")) {
+                    swiperInstance.slideTo(index);
+                  }
+                });
+              });
             }
           },
           observer: true,
