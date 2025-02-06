@@ -18,8 +18,12 @@ window.Webflow.push(() => {
   const mobileJoinLink = document.querySelector('#mobile-join-link');
   const desktopMediaQuery = window.matchMedia('(min-width: 992px)');
   const header = document.querySelector('#main-header');
-  const headerSiblings = document.querySelectorAll('body > *:not(header)');
-  const navSiblings = document.querySelectorAll('header > *:not(nav)');
+  const headerSiblings = header?.parentElement
+    ? Array.from(header.parentElement.children).filter((el) => el !== header)
+    : [];
+  const navSiblings = nav?.parentElement
+    ? Array.from(nav.parentElement.children).filter((el) => el !== nav)
+    : [];
   const levelOneListItems = document.querySelectorAll<HTMLLIElement>(`[data-level="one"] > li`);
   const navContentTopLevelElements = document.querySelectorAll(
     `.nav-content > *:not(ul, [data-has-nav-close-button])`
