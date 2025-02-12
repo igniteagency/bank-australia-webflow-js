@@ -1,5 +1,7 @@
 import type { Webflow } from '@finsweet/ts-utils';
 
+import { loadExternalScript } from '$utils/external-script-embed';
+
 export type SCRIPTS_ENV = 'dev' | 'prod';
 
 declare global {
@@ -24,10 +26,15 @@ declare global {
     DEBUG: (...args: any[]) => void;
 
     /**
-     * A list of all the scripts blocks that have been executed
-     * This is used to prevent the same script from being executed multiple times
+     * A list of all the module scripts that have been executed
+     * This is used to prevent the same module script from being executed multiple times
      */
     EXECUTED_SCRIPT: string[];
+
+    /**
+     * A helper function to load external scripts only once on a page
+     */
+    loadExternalScript: typeof loadExternalScript;
   }
 
   // Extend `querySelector` and `querySelectorAll` function to stop the nagging of converting `Element` to `HTMLElement` all the time
