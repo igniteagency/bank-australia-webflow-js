@@ -3,6 +3,8 @@
  * Fetches scripts from localhost or production site depending on the setup
  * Polls `localhost` on page load, else falls back to deriving code from production URL
  */
+import '$utils/external-script-embed';
+
 import { SCRIPTS_LOADED_EVENT } from './constants';
 import './dev/debug';
 import './dev/env';
