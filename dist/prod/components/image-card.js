@@ -1,6 +1,6 @@
-// global.js
+// components/image-card.js
 if (window.SCRIPTS_ENV === 'dev') {
-  window.loadLocalScript('http://localhost:3000/global.js');
+  window.loadLocalScript('http://localhost:3000/components/image-card.js');
 } else {
   (() => {
   // src/components/image-card.ts
@@ -19,11 +19,5 @@ if (window.SCRIPTS_ENV === 'dev') {
       }
     });
   }
-
-  // src/global.ts
-  var _a;
-  (_a = window.Webflow) == null ? void 0 : _a.push(() => {
-    setImageCardAriaLabel();
-  });
 })();
 }

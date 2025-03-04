@@ -6,7 +6,6 @@ window.Webflow.push(() => {
   }
 
   const chevronIcon = `<svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="M5.293 9.707l6 6c0.391 0.391 1.024 0.391 1.414 0l6-6c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path></svg>`;
-  const arrowIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 26 12" width="1.5em" height="1em" aria-hidden="true"><path fill="currentColor" d="M25 6.75a.75.75 0 0 0 0-1.5v1.5ZM.47 5.47a.75.75 0 0 0 0 1.06l4.773 4.773a.75.75 0 1 0 1.06-1.06L2.061 6l4.242-4.243a.75.75 0 0 0-1.06-1.06L.47 5.47ZM25 5.25H1v1.5h24v-1.5Z"></path></svg>`;
 
   // Element selectors
   const nav = document.querySelector('#main-nav');
@@ -279,10 +278,9 @@ window.Webflow.push(() => {
 
       if (!disclosureWidgetPanel) return;
 
-      // If the button already exists this function has already been run so we want to remove the event listener so we don't double up
-      if (disclosureWidgetButton) {
-        disclosureWidgetButton.removeEventListener('click', disclosureWidgetButtonOnClick);
-      }
+      // Store the text content before any DOM manipulation
+      const originalText =
+        disclosureWidgetDivOrLink?.innerText || disclosureWidgetButton?.innerText || '';
 
       // If we're on desktop and it's a level two list item and it has the div or link then we don't want to turn it into a button
       if (
@@ -293,35 +291,23 @@ window.Webflow.push(() => {
         return;
       }
 
-      // If we've made it to this point then we want to create the opposite of what we've already got (div/link or button)
+      // If we have a div or link, convert it to a button
       if (disclosureWidgetDivOrLink) {
-        disclosureWidgetButton = document.createElement('button');
-      } else {
-        if (listItem.classList.contains('nav-footer')) {
-          disclosureWidgetDivOrLink = document.createElement('div');
-        } else {
-          disclosureWidgetDivOrLink = document.createElement('a');
-        }
+        // Convert the existing element to a button
+        disclosureWidgetButton = disclosureWidgetDivOrLink as HTMLButtonElement;
+        disclosureWidgetButton.setAttribute('type', 'button');
+        disclosureWidgetButton.setAttribute('role', 'button');
+        disclosureWidgetButton.setAttribute('tabindex', '0');
       }
 
-      const disclosureWidgetText =
-        (disclosureWidgetDivOrLink?.innerText || disclosureWidgetButton?.innerText) ?? '';
-
-      // On desktop just use the text
+      // Set the content based on viewport and level
       if (desktopMediaQuery.matches) {
-        if (listItem.parentElement?.dataset.level === 'one' && disclosureWidgetButton) {
-          disclosureWidgetButton.innerHTML = disclosureWidgetText;
-        }
         if (listItem.parentElement?.dataset.level === 'two' && disclosureWidgetDivOrLink) {
-          disclosureWidgetDivOrLink.innerHTML = disclosureWidgetText;
+          disclosureWidgetDivOrLink.innerHTML = originalText;
         }
       } else {
-        // On mobile use the text as well as the icons
-        if (listItem.parentElement?.dataset.level === 'one' && disclosureWidgetButton) {
-          disclosureWidgetButton.innerHTML = arrowIcon + disclosureWidgetText + arrowIcon;
-        }
         if (listItem.parentElement?.dataset.level === 'two' && disclosureWidgetButton) {
-          disclosureWidgetButton.innerHTML = disclosureWidgetText + chevronIcon;
+          disclosureWidgetButton.innerHTML = originalText + chevronIcon;
         }
       }
 
@@ -338,18 +324,12 @@ window.Webflow.push(() => {
           disclosureWidgetButton.setAttribute('aria-controls', `nav__ul-${index}`);
           disclosureWidgetPanel.setAttribute('id', `nav__ul-${index}`);
           disclosureWidgetPanel.setAttribute('hidden', '');
-          if (disclosureWidgetDivOrLink) {
-            disclosureWidgetDivOrLink.replaceWith(disclosureWidgetButton);
-          }
           disclosureWidgetButton.addEventListener('click', disclosureWidgetButtonOnClick);
         }
       } else {
         // Otherwise remove the things that are needed to make the disclosure widget interactive
         disclosureWidgetPanel.removeAttribute('id');
         disclosureWidgetPanel.removeAttribute('hidden');
-        if (disclosureWidgetButton && disclosureWidgetDivOrLink) {
-          disclosureWidgetButton.replaceWith(disclosureWidgetDivOrLink);
-        }
       }
     });
   }
