@@ -10,7 +10,6 @@ if (window.SCRIPTS_ENV === 'dev') {
       console.debug("Global nav script already executed");
       return;
     }
-    const chevronIcon = `<svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="M5.293 9.707l6 6c0.391 0.391 1.024 0.391 1.414 0l6-6c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path></svg>`;
     const nav = document.querySelector("#main-nav");
     const navButton = document.querySelector("#nav-toggle");
     const navCloseButton = document.querySelector("#nav-close-button");
@@ -204,36 +203,17 @@ if (window.SCRIPTS_ENV === 'dev') {
     }
     function initialiseDisclosureWidgets() {
       listItemsWithChildren.forEach((listItem, index) => {
-        var _a, _b, _c, _d, _e;
+        var _a, _b;
         let disclosureWidgetDivOrLink = listItem.querySelector(
           ":scope > div:not(.nav-footer-line), :scope > a"
         );
         let disclosureWidgetButton = listItem.querySelector(":scope > button");
         const disclosureWidgetPanel = listItem.querySelector(":scope > ul");
         if (!disclosureWidgetPanel) return;
-        const originalText = (disclosureWidgetDivOrLink == null ? void 0 : disclosureWidgetDivOrLink.innerText) || (disclosureWidgetButton == null ? void 0 : disclosureWidgetButton.innerText) || "";
-        if (desktopMediaQuery.matches && ((_a = listItem.parentElement) == null ? void 0 : _a.dataset.level) === "two" && disclosureWidgetDivOrLink) {
-          return;
-        }
-        if (disclosureWidgetDivOrLink) {
-          disclosureWidgetButton = disclosureWidgetDivOrLink;
-          disclosureWidgetButton.setAttribute("type", "button");
-          disclosureWidgetButton.setAttribute("role", "button");
-          disclosureWidgetButton.setAttribute("tabindex", "0");
-        }
-        if (desktopMediaQuery.matches) {
-          if (((_b = listItem.parentElement) == null ? void 0 : _b.dataset.level) === "two" && disclosureWidgetDivOrLink) {
-            disclosureWidgetDivOrLink.innerHTML = originalText;
-          }
-        } else {
-          if (((_c = listItem.parentElement) == null ? void 0 : _c.dataset.level) === "two" && disclosureWidgetButton) {
-            disclosureWidgetButton.innerHTML = originalText + chevronIcon;
-          }
-        }
-        if (!desktopMediaQuery.matches || desktopMediaQuery.matches && ((_d = listItem.parentElement) == null ? void 0 : _d.dataset.level) === "one") {
+        if (!desktopMediaQuery.matches || desktopMediaQuery.matches && ((_a = listItem.parentElement) == null ? void 0 : _a.dataset.level) === "one") {
           if (disclosureWidgetButton) {
             disclosureWidgetButton.setAttribute("aria-expanded", "false");
-            if ((_e = disclosureWidgetButton.parentElement) == null ? void 0 : _e.dataset) {
+            if ((_b = disclosureWidgetButton.parentElement) == null ? void 0 : _b.dataset) {
               disclosureWidgetButton.parentElement.dataset.hasChildAriaExpanded = "false";
             }
             disclosureWidgetButton.setAttribute("aria-controls", `nav__ul-${index}`);

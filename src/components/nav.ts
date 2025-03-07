@@ -5,8 +5,6 @@ window.Webflow.push(() => {
     return;
   }
 
-  const chevronIcon = `<svg viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true"><path fill="currentColor" d="M5.293 9.707l6 6c0.391 0.391 1.024 0.391 1.414 0l6-6c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path></svg>`;
-
   // Element selectors
   const nav = document.querySelector('#main-nav');
   const navButton = document.querySelector<HTMLButtonElement>('#nav-toggle');
@@ -277,39 +275,6 @@ window.Webflow.push(() => {
       const disclosureWidgetPanel = listItem.querySelector<HTMLUListElement>(':scope > ul');
 
       if (!disclosureWidgetPanel) return;
-
-      // Store the text content before any DOM manipulation
-      const originalText =
-        disclosureWidgetDivOrLink?.innerText || disclosureWidgetButton?.innerText || '';
-
-      // If we're on desktop and it's a level two list item and it has the div or link then we don't want to turn it into a button
-      if (
-        desktopMediaQuery.matches &&
-        listItem.parentElement?.dataset.level === 'two' &&
-        disclosureWidgetDivOrLink
-      ) {
-        return;
-      }
-
-      // If we have a div or link, convert it to a button
-      if (disclosureWidgetDivOrLink) {
-        // Convert the existing element to a button
-        disclosureWidgetButton = disclosureWidgetDivOrLink as HTMLButtonElement;
-        disclosureWidgetButton.setAttribute('type', 'button');
-        disclosureWidgetButton.setAttribute('role', 'button');
-        disclosureWidgetButton.setAttribute('tabindex', '0');
-      }
-
-      // Set the content based on viewport and level
-      if (desktopMediaQuery.matches) {
-        if (listItem.parentElement?.dataset.level === 'two' && disclosureWidgetDivOrLink) {
-          disclosureWidgetDivOrLink.innerHTML = originalText;
-        }
-      } else {
-        if (listItem.parentElement?.dataset.level === 'two' && disclosureWidgetButton) {
-          disclosureWidgetButton.innerHTML = originalText + chevronIcon;
-        }
-      }
 
       // If it's mobile or it's desktop and a level one list item setup disclosure widget
       if (
