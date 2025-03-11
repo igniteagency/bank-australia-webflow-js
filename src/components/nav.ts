@@ -268,9 +268,6 @@ window.Webflow.push(() => {
 
   function initialiseDisclosureWidgets(): void {
     listItemsWithChildren.forEach((listItem, index) => {
-      let disclosureWidgetDivOrLink = listItem.querySelector<HTMLElement>(
-        ':scope > div:not(.nav-footer-line), :scope > a'
-      );
       let disclosureWidgetButton = listItem.querySelector<HTMLButtonElement>(':scope > button');
       const disclosureWidgetPanel = listItem.querySelector<HTMLUListElement>(':scope > ul');
 
