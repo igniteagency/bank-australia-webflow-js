@@ -4,8 +4,7 @@ if (window.SCRIPTS_ENV === 'dev') {
 } else {
   (() => {
   // src/components/nav.ts
-  window.Webflow = window.Webflow || [];
-  window.Webflow.push(() => {
+  (() => {
     if (window.EXECUTED_SCRIPT.includes("global-nav")) {
       console.debug("Global nav script already executed");
       return;
@@ -204,9 +203,6 @@ if (window.SCRIPTS_ENV === 'dev') {
     function initialiseDisclosureWidgets() {
       listItemsWithChildren.forEach((listItem, index) => {
         var _a, _b;
-        let disclosureWidgetDivOrLink = listItem.querySelector(
-          ":scope > div:not(.nav-footer-line), :scope > a"
-        );
         let disclosureWidgetButton = listItem.querySelector(":scope > button");
         const disclosureWidgetPanel = listItem.querySelector(":scope > ul");
         if (!disclosureWidgetPanel) return;
@@ -280,6 +276,6 @@ if (window.SCRIPTS_ENV === 'dev') {
       navContent == null ? void 0 : navContent.style.removeProperty("transition");
     }, 0);
     window.EXECUTED_SCRIPT.push("global-nav");
-  });
+  })();
 })();
 }
