@@ -1,5 +1,4 @@
-window.Webflow = window.Webflow || [];
-window.Webflow.push(() => {
+(() => {
   if (window.EXECUTED_SCRIPT.includes('global-nav')) {
     console.debug('Global nav script already executed');
     return;
@@ -361,4 +360,4 @@ window.Webflow.push(() => {
   }, 0); // The 0ms timeout stops the transitions from running on page load.
 
   window.EXECUTED_SCRIPT.push('global-nav');
-});
+})();
