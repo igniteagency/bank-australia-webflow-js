@@ -3,9 +3,15 @@
  * and creates complete schema markup including the script tag
  */
 
-document.addEventListener('DOMContentLoaded', function () {
+window.Webflow = window.Webflow || [];
+window.Webflow.push(() => {
+  if (window.EXECUTED_SCRIPT.includes('schema-markup')) {
+    console.debug('Schema markup script already executed');
+    return;
+  }
+
   // Find all schema placeholder elements
-  const schemaElements = document.querySelectorAll('[data-el="schema-markup"]');
+  const schemaElements = document.querySelectorAll('[data-el="schema-markup-slot"] > .w-embed');
 
   // Process each schema element
   schemaElements.forEach((element) => {
@@ -13,7 +19,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const schemaTemplate = element.innerHTML.trim();
 
     // If empty, don't proceed
-    if (!schemaTemplate) return;
+    if (!schemaTemplate) {
+      console.debug('Schema template is empty', { element });
+      return;
+    }
 
     // Create a new object to hold all data attributes
     const dataAttributes: Record<string, string> = {};
@@ -55,4 +64,5 @@ document.addEventListener('DOMContentLoaded', function () {
     // remove the original element after processing
     element.remove();
   });
+  window.EXECUTED_SCRIPT.push('schema-markup');
 });
