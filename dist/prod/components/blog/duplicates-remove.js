@@ -1,4 +1,3 @@
-// components/blog/duplicates-remove.js
 if (window.SCRIPTS_ENV === 'dev') {
   window.loadLocalScript('http://localhost:3000/components/blog/duplicates-remove.js');
 } else {

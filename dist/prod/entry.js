@@ -1,4 +1,3 @@
-// entry.js
 if (window.SCRIPTS_ENV === 'dev') {
   window.loadLocalScript('http://localhost:3000/entry.js');
 } else {

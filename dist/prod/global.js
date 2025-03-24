@@ -1,4 +1,3 @@
-// global.js
 if (window.SCRIPTS_ENV === 'dev') {
   window.loadLocalScript('http://localhost:3000/global.js');
 } else {
