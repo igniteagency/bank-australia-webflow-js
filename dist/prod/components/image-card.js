@@ -1,4 +1,3 @@
-// components/image-card.js
 if (window.SCRIPTS_ENV === 'dev') {
   window.loadLocalScript('http://localhost:3000/components/image-card.js');
 } else {

@@ -1,4 +1,3 @@
-// components/nav.js
 if (window.SCRIPTS_ENV === 'dev') {
   window.loadLocalScript('http://localhost:3000/components/nav.js');
 } else {

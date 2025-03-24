@@ -1,4 +1,3 @@
-// utils/icon-animate.js
 if (window.SCRIPTS_ENV === 'dev') {
   window.loadLocalScript('http://localhost:3000/utils/icon-animate.js');
 } else {

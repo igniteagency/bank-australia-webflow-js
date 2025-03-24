@@ -1,4 +1,3 @@
-// utils/mousemove.js
 if (window.SCRIPTS_ENV === 'dev') {
   window.loadLocalScript('http://localhost:3000/utils/mousemove.js');
 } else {

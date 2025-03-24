@@ -1,4 +1,3 @@
-// components/autoplay-slider.js
 if (window.SCRIPTS_ENV === 'dev') {
   window.loadLocalScript('http://localhost:3000/components/autoplay-slider.js');
 } else {

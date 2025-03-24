@@ -1,4 +1,3 @@
-// components/app-download-dialog.js
 if (window.SCRIPTS_ENV === 'dev') {
   window.loadLocalScript('http://localhost:3000/components/app-download-dialog.js');
 } else {
