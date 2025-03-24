@@ -16,8 +16,8 @@ const files = [
   './src/utils/**/*.ts',
 ];
 
-const wrapScript = (code, filename) => `// ${filename}
-if (window.SCRIPTS_ENV === 'dev') {
+const wrapScript = (code, filename) =>
+  `if (window.SCRIPTS_ENV === 'dev') {
   window.loadLocalScript('${LOCAL_SCRIPT_URL}${filename}');
 } else {
   ${code.replace(/^"use strict";/, '').trim()}
@@ -86,8 +86,9 @@ const buildSettings = {
   treeShaking: true,
   target: production ? 'es2017' : 'esnext',
   plugins: [wrapperPlugin],
-  // format: 'iife',
+  format: 'iife',
   external: ['swiper', 'swiper/modules'],
+  legalComments: 'inline',
 };
 
 // Function to recursively delete directory contents
