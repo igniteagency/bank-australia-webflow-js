@@ -8,7 +8,11 @@ class AlpineJSWebflow {
     this.init();
 
     window
-      .loadExternalScript('https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js', 'head')
+      .loadExternalScript(
+        'https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js',
+        'head',
+        true
+      )
       .then(() => {
         console.debug('AlpineJS init');
       });
