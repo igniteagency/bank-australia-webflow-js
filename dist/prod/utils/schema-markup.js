@@ -7,8 +7,7 @@ if (window.SCRIPTS_ENV === 'dev') {
    * This script finds all elements with data-el="schema-markup"
    * and creates complete schema markup including the script tag
    */
-  window.Webflow = window.Webflow || [];
-  window.Webflow.push(() => {
+  document.addEventListener("alpine:initialized", () => {
     if (window.EXECUTED_SCRIPT.includes("schema-markup")) {
       console.debug("Schema markup script already executed");
       return;
@@ -17,7 +16,7 @@ if (window.SCRIPTS_ENV === 'dev') {
     schemaElements.forEach((element) => {
       const schemaTemplate = element.innerHTML.trim();
       if (!schemaTemplate) {
-        console.debug("Schema template is empty", { element });
+        console.error("Schema template is empty", { element });
         return;
       }
       const dataAttributes = {};

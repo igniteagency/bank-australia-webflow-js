@@ -3,24 +3,33 @@ if (window.SCRIPTS_ENV === 'dev') {
 } else {
   (() => {
   // src/utils/external-script-embed.ts
-  function loadExternalScript(url, placement = "body", defer = true) {
+  function loadExternalScript(url, placement = "body", defer = true, scriptName = void 0) {
     return new Promise((resolve, reject) => {
-      const existingScript = document.querySelector(`script[src="${url}"]`);
-      if (existingScript) {
+      if (document.querySelector(`script[src="${url}"]`)) {
         resolve();
         return;
       }
       const script = document.createElement("script");
       script.src = url;
       if (defer) script.defer = true;
-      script.onload = () => resolve();
-      script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
+      script.addEventListener("load", () => {
+        if (scriptName) {
+          const event = new CustomEvent(`scriptLoaded:${scriptName}`, {
+            detail: { url, scriptName }
+          });
+          document.dispatchEvent(event);
+        }
+        resolve();
+      });
+      script.addEventListener("error", (error) => {
+        reject(new Error(`Failed to load script: ${url}`));
+      });
       if (placement === "head") {
         document.head.appendChild(script);
       } else if (placement === "body") {
         document.body.appendChild(script);
       } else {
-        reject(new Error('Invalid placement. Use "head" or "body".'));
+        reject(new Error('Invalid script placement. Use "head" or "body".'));
       }
     });
   }
