@@ -2,9 +2,7 @@
  * This script finds all elements with data-el="schema-markup"
  * and creates complete schema markup including the script tag
  */
-
-window.Webflow = window.Webflow || [];
-window.Webflow.push(() => {
+document.addEventListener('alpine:initialized', () => {
   if (window.EXECUTED_SCRIPT.includes('schema-markup')) {
     console.debug('Schema markup script already executed');
     return;
@@ -20,7 +18,7 @@ window.Webflow.push(() => {
 
     // If empty, don't proceed
     if (!schemaTemplate) {
-      console.debug('Schema template is empty', { element });
+      console.error('Schema template is empty', { element });
       return;
     }
 
@@ -42,12 +40,12 @@ window.Webflow.push(() => {
     // Find all placeholders in the format {{name}}
     const placeholders = schemaTemplate.match(/\{\{([^}]+)\}\}/g) || [];
 
-    // Replace each placeholder
+    // Replace only placeholders that have matching data attributes, leaving others unchanged
     placeholders.forEach((placeholder) => {
       // Extract name without braces (e.g., "name" from "{{name}}") and convert to lowercase
       const placeholderName = placeholder.replace(/\{\{|\}\}/g, '').toLowerCase();
 
-      // Replace with the corresponding data attribute if it exists
+      // Replace only if a corresponding data attribute exists, otherwise leave placeholder as is
       if (dataAttributes[placeholderName]) {
         schemaContent = schemaContent.replace(placeholder, dataAttributes[placeholderName]);
       }

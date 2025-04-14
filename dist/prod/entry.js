@@ -3,24 +3,33 @@ if (window.SCRIPTS_ENV === 'dev') {
 } else {
   (() => {
   // src/utils/external-script-embed.ts
-  function loadExternalScript(url, placement = "body", defer = true) {
+  function loadExternalScript(url, placement = "body", defer = true, scriptName = void 0) {
     return new Promise((resolve, reject) => {
-      const existingScript = document.querySelector(`script[src="${url}"]`);
-      if (existingScript) {
+      if (document.querySelector(`script[src="${url}"]`)) {
         resolve();
         return;
       }
       const script = document.createElement("script");
       script.src = url;
       if (defer) script.defer = true;
-      script.onload = () => resolve();
-      script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
+      script.addEventListener("load", () => {
+        if (scriptName) {
+          const event = new CustomEvent(`scriptLoaded:${scriptName}`, {
+            detail: { url, scriptName }
+          });
+          document.dispatchEvent(event);
+        }
+        resolve();
+      });
+      script.addEventListener("error", (error) => {
+        reject(new Error(`Failed to load script: ${url}`));
+      });
       if (placement === "head") {
         document.head.appendChild(script);
       } else if (placement === "body") {
         document.body.appendChild(script);
       } else {
-        reject(new Error('Invalid placement. Use "head" or "body".'));
+        reject(new Error('Invalid script placement. Use "head" or "body".'));
       }
     });
   }
@@ -32,11 +41,6 @@ if (window.SCRIPTS_ENV === 'dev') {
   // src/dev/debug.ts
   var DEBUG_MODE_LOCALSTORAGE_ID = "IS_DEBUG_MODE";
   window.IS_DEBUG_MODE = getDebugMode();
-  console.debug = function(...args) {
-    if (window.IS_DEBUG_MODE) {
-      console.log(...args);
-    }
-  };
   window.setDebugMode = (mode) => {
     localStorage.setItem(DEBUG_MODE_LOCALSTORAGE_ID, mode.toString());
   };
@@ -96,7 +100,10 @@ if (window.SCRIPTS_ENV === 'dev') {
   }
 
   // src/entry.ts
-  console.log(`Current mode: ${window.SCRIPTS_ENV}`);
+  console.log(
+    `Current script loading mode: %c${window.SCRIPTS_ENV}`,
+    "color: red; font-weight: bold;"
+  );
   outputEnvSwitchLog(window.SCRIPTS_ENV);
   window.EXECUTED_SCRIPT = [];
   var SCRIPT_LOAD_PROMISES = [];
