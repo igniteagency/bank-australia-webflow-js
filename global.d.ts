@@ -1,4 +1,5 @@
 import type { Webflow } from '@finsweet/ts-utils';
+import type Alpine from 'alpinejs';
 
 import { loadExternalScript } from '$utils/external-script-embed';
 
@@ -31,6 +32,8 @@ declare global {
      * A helper function to load external scripts only once on a page
      */
     loadExternalScript: typeof loadExternalScript;
+
+    Alpine: typeof Alpine;
   }
 
   // Extend `querySelector` and `querySelectorAll` function to stop the nagging of converting `Element` to `HTMLElement` all the time

@@ -1,3 +1,4 @@
+import '$utils/alpine-webflow';
 import { initBugHerd } from '$utils/bugherd-script';
 
 import { setImageCardAriaLabel } from './components/image-card';
