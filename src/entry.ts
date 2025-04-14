@@ -10,7 +10,10 @@ import './dev/debug';
 import './dev/env';
 import { outputEnvSwitchLog } from './dev/env';
 
-console.log(`Current mode: ${window.SCRIPTS_ENV}`);
+console.log(
+  `Current script loading mode: %c${window.SCRIPTS_ENV}`,
+  'color: red; font-weight: bold;'
+);
 outputEnvSwitchLog(window.SCRIPTS_ENV);
 
 window.EXECUTED_SCRIPT = [];
