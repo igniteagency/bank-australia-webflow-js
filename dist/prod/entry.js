@@ -32,11 +32,6 @@ if (window.SCRIPTS_ENV === 'dev') {
   // src/dev/debug.ts
   var DEBUG_MODE_LOCALSTORAGE_ID = "IS_DEBUG_MODE";
   window.IS_DEBUG_MODE = getDebugMode();
-  console.debug = function(...args) {
-    if (window.IS_DEBUG_MODE) {
-      console.log(...args);
-    }
-  };
   window.setDebugMode = (mode) => {
     localStorage.setItem(DEBUG_MODE_LOCALSTORAGE_ID, mode.toString());
   };

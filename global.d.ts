@@ -20,10 +20,6 @@ declare global {
 
     IS_DEBUG_MODE: boolean;
     setDebugMode(mode: boolean): void;
-    /**
-     * A wrapper function to directly console log when debug mode is active
-     */
-    DEBUG: (...args: any[]) => void;
 
     /**
      * A list of all the module scripts that have been executed
