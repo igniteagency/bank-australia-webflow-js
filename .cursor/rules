@@ -1,0 +1,213 @@
+# Bank Australia Webflow TypeScript - Cursor AI Guidelines
+
+## Project Context
+
+This is a TypeScript project that generates JavaScript code for Webflow integration. All code is manually copied into Webflow's custom code sections after build. The project uses `bun` for development and builds, with esbuild as the bundler.
+
+## Build System Understanding
+
+### Build Process (from build.js)
+```typescript
+// Build output structure
+const DEV_BUILD_PATH = './dist/dev'     // For local development
+const PROD_BUILD_PATH = './dist/prod'    // For production builds
+
+// Files pattern to process
+const files = [
+  './src/*.ts',
+  './src/components/**/*.ts',
+  './src/pages/**/*.ts',
+  './src/utils/**/*.ts'
+];
+
+// Production code is wrapped with environment check
+const wrapScript = (code, filename) => `
+if (window.SCRIPTS_ENV === 'dev') {
+  window.loadLocalScript('${LOCAL_SCRIPT_URL}${filename}');
+} else {
+  ${code}
+}`;
+```
+
+## Type System (from global.d.ts)
+
+### Global Types to Consider
+```typescript
+type SCRIPTS_ENV = 'dev' | 'prod';
+
+interface Window {
+  JS_SCRIPTS: Set<string>;
+  SCRIPTS_ENV: SCRIPTS_ENV;
+  IS_DEBUG_MODE: boolean;
+  EXECUTED_SCRIPT: string[];
+  loadExternalScript: typeof loadExternalScript;
+  Alpine: typeof Alpine;
+}
+```
+
+Add any more global types here if necessary and loading library in `global.ts`.
+
+Always check `global.d.ts` and use the global variables for the libraries that already exist, example GSAP and Scrolltrigger. Like `window.gsap`, `window.ScrollTrigger`
+
+## Code Generation Rules
+
+### 1. File Organization
+When generating or modifying code:
+```typescript
+src/
+├── components/    // Generate reusable UI components here
+├── pages/        // Page-specific code only
+├── utils/        // Shared utilities
+└── dev/          // Development tooling only
+```
+
+### 2. DOM Selection Pattern
+```typescript
+// ALWAYS use data-el for functional elements
+const CORRECT = '[data-el="component-name"]'
+const INCORRECT = '.component-class'
+
+// When generating component code:
+function initComponent() {
+  const element = document.querySelector('[data-el="component-name"]');
+  if (!element) return; // Always check existence
+}
+```
+
+Extract out selector and class variables at the top of the file in constant case.
+
+### 3. External Libraries
+```typescript
+// ALWAYS use CDN for external libraries
+window.loadExternalScript(
+  'https://cdn.jsdelivr.net/npm/library@version/dist/file.min.js',
+  'head',
+  true
+);
+
+// DO NOT generate imports like:
+import largeLibrary from 'large-library';
+```
+
+### 4. AlpineJS Integration
+When generating Alpine.js components:
+```typescript
+// Prefer HTML-first approach
+const HTML_PATTERN = `
+<div x-data="{ state: false }">
+  <button
+    @click="state = !state"
+    data-el="toggle"
+  >Toggle</button>
+</div>
+`;
+
+// Only generate TypeScript when HTML-only solution isn't sufficient
+const TS_PATTERN = `
+Alpine.data('componentName', () => ({
+  init() {
+    // Required initialization
+  },
+  cleanup() {
+    // Always include cleanup
+  }
+}));
+`;
+```
+
+### 5. Animation Code Generation
+```typescript
+// Always use GSAP for animations
+gsap.to('[data-el="target"]', {
+  scrollTrigger: {
+    trigger: '[data-el="trigger"]',
+    start: 'top center',
+  },
+  opacity: 1,
+  duration: 0.6
+});
+```
+
+### 6. Error Handling Pattern
+```typescript
+// Always wrap async operations
+try {
+  const data = await fetchData();
+  if (!data) throw new Error('No data received');
+} catch (error) {
+  console.error('Operation failed:', error);
+  // Include fallback behavior
+}
+```
+
+### 7. Memory Management
+When generating event listeners or observers:
+```typescript
+// ALWAYS include cleanup
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      // Handle visibility
+    }
+  });
+});
+
+// Cleanup
+return () => observer.disconnect();
+```
+
+## Build Output Requirements
+
+### Development Build
+- Generate sourcemaps
+- Preserve file structure
+- Include debug logs
+
+### Production Build
+- Minify output
+- Remove debug statements
+- Wrap with environment check
+- No sourcemaps
+
+## Version Control Integration
+
+### Commit Message Analysis
+- `#major` in commit = Breaking change
+- `#minor` in commit = New feature
+- `#patch` in commit = Bug fix (default)
+
+## Code Quality Checks
+
+### Generated Code Must:
+1. Include proper type definitions
+2. Use data attributes for DOM selection
+3. Include error handling
+4. Clean up resources (event listeners, observers)
+5. Follow performance best practices
+6. Include JSDoc comments for public functions
+
+### Performance Requirements
+1. Use IntersectionObserver over scroll listeners
+2. Implement proper cleanup functions
+3. Use event delegation where appropriate
+4. Lazy load heavy resources
+5. Implement debouncing/throttling for heavy operations
+
+## Debugging Support
+
+### Include Debug Points:
+```typescript
+if (window.IS_DEBUG_MODE) {
+  console.debug('Component State:', state);
+}
+```
+
+## Response Format
+
+When suggesting code changes:
+1. Explain the change purpose
+2. Show the code diff
+3. Highlight performance implications
+4. Note any side effects
+5. Include cleanup requirements
+
