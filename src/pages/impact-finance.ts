@@ -84,19 +84,16 @@ class ImpactFinancePie {
     this.section.style.setProperty(this.TOTAL_SECTIONS_PROPERTY, this.totalStatsCount.toString());
     this.section.style.setProperty(this.ACTIVE_SECTION_PROPERTY, this.currentIndex.toString());
 
-    // Create snap points array (normalized positions for each stat)
-    const snapPoints = this.stats.map((_, index) => index / (this.totalStatsCount - 1));
-
-    const end =
-      this.stats[this.totalStatsCount - 1].offsetTop +
-      this.stats[this.totalStatsCount - 1].offsetHeight;
+    // const snapPoints = this.stats.map((_, index) => index / (this.totalStatsCount - 1));
+    const end = this.stats[this.totalStatsCount - 1].offsetTop;
+    // this.stats[this.totalStatsCount - 1].offsetHeight;
 
     // Set up ScrollTrigger for the section
     ScrollTrigger.create({
       trigger: this.section,
       start: 'top top',
       end: `+=${end}`,
-      snap: snapPoints,
+      // snap: snapPoints,
       onUpdate: (self) => {
         const index = Math.round(self.progress * (this.totalStatsCount - 1)) + 1;
         if (this.currentIndex !== index) {
