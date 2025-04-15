@@ -33,7 +33,6 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "gsap": "^3.12.7",
     "swiper": "^11.2.1"
   }
 }
