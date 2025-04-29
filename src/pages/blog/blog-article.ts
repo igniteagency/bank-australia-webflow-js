@@ -1,9 +1,7 @@
-import { initArticlesSlider } from 'src/components/blog/slider';
 import Swiper from 'swiper';
 import { Navigation } from 'swiper/modules';
 
 window.Webflow?.push(() => {
-  initArticlesSlider();
   initGallerySlider();
 });
 

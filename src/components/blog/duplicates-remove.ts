@@ -1,5 +1,9 @@
 const ARTICLE_SLUG_ATTR = 'data-duplicate-check-slug';
 
+window.Webflow?.push(() => {
+  initDuplicateArticlesRemoval();
+});
+
 export function initDuplicateArticlesRemoval() {
   const articleSlugList: string[] = [];
 
