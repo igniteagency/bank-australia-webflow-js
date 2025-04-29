@@ -4,6 +4,10 @@ if (window.SCRIPTS_ENV === 'dev') {
   (() => {
   // src/components/blog/duplicates-remove.ts
   var ARTICLE_SLUG_ATTR = "data-duplicate-check-slug";
+  var _a;
+  (_a = window.Webflow) == null ? void 0 : _a.push(() => {
+    initDuplicateArticlesRemoval();
+  });
   function initDuplicateArticlesRemoval() {
     const articleSlugList = [];
     document.querySelectorAll(`[${ARTICLE_SLUG_ATTR}]`).forEach((articleItemEl) => {
