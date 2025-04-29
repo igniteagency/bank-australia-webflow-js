@@ -21,12 +21,12 @@ if (window.SCRIPTS_ENV === 'dev') {
       var updateAutoplayButtonState = updateAutoplayButtonState2;
       await window.loadExternalScript(SWIPER_CDN_URL);
       let SLIDER_GAP = 80;
-      const SECTION_SELECTOR = '[data-blog-slider-el="section"]';
-      const NAV_PREV_BUTTON_SELECTOR = '[data-blog-slider-el="nav-prev"]';
-      const NAV_NEXT_BUTTON_SELECTOR = '[data-blog-slider-el="nav-next"]';
-      const AUTOPLAY_BUTTON_SELECTOR = '[data-blog-slider-el="autoplay"]';
-      const PAGINATION_SELECTOR = '[data-blog-slider-el="pagination"]';
-      const SLIDER_GAP_OVERRIDE_ATTR = "data-blog-slider-gap";
+      const SECTION_SELECTOR = '[data-slider-el="section"]';
+      const NAV_PREV_BUTTON_SELECTOR = '[data-slider-el="nav-prev"]';
+      const NAV_NEXT_BUTTON_SELECTOR = '[data-slider-el="nav-next"]';
+      const AUTOPLAY_BUTTON_SELECTOR = '[data-slider-el="autoplay"]';
+      const PAGINATION_SELECTOR = '[data-slider-el="pagination"]';
+      const SLIDER_GAP_OVERRIDE_ATTR = "data-slider-gap";
       document.querySelectorAll(SECTION_SELECTOR).forEach((sliderSectionEl) => {
         const swiperEl = sliderSectionEl.querySelector(".swiper");
         const navPrevButtonEl = sliderSectionEl.querySelector(NAV_PREV_BUTTON_SELECTOR);

@@ -31,13 +31,17 @@ if (window.SCRIPTS_ENV === 'dev') {
     mod
   ));
 
-  // src/components/blog/slider.ts
+  // src/pages/blog/blog-article.ts
   var import_swiper = __toESM(__require("swiper"), 1);
   var import_modules = __require("swiper/modules");
-  var SECTION_SELECTOR = '[data-blog-slider-el="section"]';
-  var NAV_PREV_BUTTON_SELECTOR = '[data-blog-slider-el="nav-prev"]';
-  var NAV_NEXT_BUTTON_SELECTOR = '[data-blog-slider-el="nav-next"]';
-  function initArticlesSlider() {
+  var _a;
+  (_a = window.Webflow) == null ? void 0 : _a.push(() => {
+    initGallerySlider();
+  });
+  function initGallerySlider() {
+    const SECTION_SELECTOR = '[data-gallery-layout="Image Slider"]';
+    const NAV_PREV_BUTTON_SELECTOR = '[data-gallery-slider-el="nav-prev"]';
+    const NAV_NEXT_BUTTON_SELECTOR = '[data-gallery-slider-el="nav-next"]';
     document.querySelectorAll(SECTION_SELECTOR).forEach((sliderSectionEl) => {
       const swiperEl = sliderSectionEl.querySelector(".swiper");
       const navPrevButtonEl = sliderSectionEl.querySelector(NAV_PREV_BUTTON_SELECTOR);
@@ -54,55 +58,6 @@ if (window.SCRIPTS_ENV === 'dev') {
       }
       new import_swiper.default(swiperEl, {
         modules: [import_modules.Navigation],
-        loop: false,
-        slidesPerView: 1,
-        slidesPerGroup: 1,
-        spaceBetween: 20,
-        navigation: {
-          nextEl: navNextButtonEl,
-          prevEl: navPrevButtonEl,
-          disabledClass: "is-disabled"
-        },
-        breakpoints: {
-          481: {
-            slidesPerView: 2
-          },
-          768: {
-            slidesPerView: 3
-          }
-        }
-      });
-    });
-  }
-
-  // src/pages/blog/blog-article.ts
-  var import_swiper2 = __toESM(__require("swiper"), 1);
-  var import_modules2 = __require("swiper/modules");
-  var _a;
-  (_a = window.Webflow) == null ? void 0 : _a.push(() => {
-    initArticlesSlider();
-    initGallerySlider();
-  });
-  function initGallerySlider() {
-    const SECTION_SELECTOR2 = '[data-gallery-layout="Image Slider"]';
-    const NAV_PREV_BUTTON_SELECTOR2 = '[data-gallery-slider-el="nav-prev"]';
-    const NAV_NEXT_BUTTON_SELECTOR2 = '[data-gallery-slider-el="nav-next"]';
-    document.querySelectorAll(SECTION_SELECTOR2).forEach((sliderSectionEl) => {
-      const swiperEl = sliderSectionEl.querySelector(".swiper");
-      const navPrevButtonEl = sliderSectionEl.querySelector(NAV_PREV_BUTTON_SELECTOR2);
-      const navNextButtonEl = sliderSectionEl.querySelector(NAV_NEXT_BUTTON_SELECTOR2);
-      if (!swiperEl) {
-        console.debug("No swiper element found in the slider section", sliderSectionEl);
-        return;
-      }
-      const slidesCount = swiperEl.querySelectorAll(".swiper-slide").length;
-      if (!slidesCount) {
-        console.debug("No slides found in the slider. Deleting the section", swiperEl);
-        sliderSectionEl.remove();
-        return;
-      }
-      new import_swiper2.default(swiperEl, {
-        modules: [import_modules2.Navigation],
         loop: false,
         spaceBetween: 20,
         slidesPerView: "auto",
