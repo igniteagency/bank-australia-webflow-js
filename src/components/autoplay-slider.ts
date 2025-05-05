@@ -13,7 +13,7 @@ window.Webflow.push(async () => {
     // Load Swiper JS first
     await window.loadExternalScript(SWIPER_CDN_URL);
 
-    let SLIDER_GAP = 80;
+    let DEFAULT_SLIDER_GAP = 40;
 
     const SECTION_SELECTOR = '[data-slider-el="section"]';
     const NAV_PREV_BUTTON_SELECTOR = '[data-slider-el="nav-prev"]';
@@ -21,7 +21,9 @@ window.Webflow.push(async () => {
     const AUTOPLAY_BUTTON_SELECTOR = '[data-slider-el="autoplay"]';
     const PAGINATION_SELECTOR = '[data-slider-el="pagination"]';
 
+    const LOOP_ATTRIBUTE = 'data-slider-loop';
     const SLIDER_GAP_OVERRIDE_ATTR = 'data-slider-gap';
+    const CENTERED_SLIDES_ATTRIBUTE = 'data-slider-centered';
 
     document.querySelectorAll(SECTION_SELECTOR).forEach((sliderSectionEl) => {
       const swiperEl = sliderSectionEl.querySelector('.swiper');
@@ -29,13 +31,12 @@ window.Webflow.push(async () => {
       const navNextButtonEl = sliderSectionEl.querySelector(NAV_NEXT_BUTTON_SELECTOR);
       const autoplayButtonEl = sliderSectionEl.querySelector(AUTOPLAY_BUTTON_SELECTOR);
       const paginationEl = sliderSectionEl.querySelector(PAGINATION_SELECTOR);
-      const sliderGapOverrideEl = sliderSectionEl.querySelector(`[${SLIDER_GAP_OVERRIDE_ATTR}]`);
 
-      if (sliderGapOverrideEl) {
-        SLIDER_GAP = parseInt(
-          sliderGapOverrideEl.getAttribute(SLIDER_GAP_OVERRIDE_ATTR) || SLIDER_GAP.toString()
-        );
-      }
+      const shouldLoop = sliderSectionEl.getAttribute(LOOP_ATTRIBUTE) === 'true' ? true : false;
+      const sliderGap =
+        sliderSectionEl.getAttribute(SLIDER_GAP_OVERRIDE_ATTR) || DEFAULT_SLIDER_GAP;
+      const shouldCenterSlides =
+        sliderSectionEl.getAttribute(CENTERED_SLIDES_ATTRIBUTE) === 'true' ? true : false;
 
       if (!swiperEl) {
         console.debug('No swiper element found in the slider section', sliderSectionEl);
@@ -76,26 +77,32 @@ window.Webflow.push(async () => {
           }
         : false;
 
+      const autoplayConfig = autoplayButtonEl
+        ? {
+            delay: AUTOPLAY_DELAY_MS,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+          }
+        : false;
+
+      console.debug({ shouldLoop, shouldCenterSlides, autoplayConfig });
+
       // Initialize Swiper with autoplay
       try {
         const swiper = new Swiper(swiperEl, {
-          loop: true,
+          loop: shouldLoop,
           slidesPerView: 'auto',
           slidesPerGroup: 1,
           speed: SLIDER_TRANSITION_SPEED_MS,
-          spaceBetween: SLIDER_GAP,
-          centeredSlides: true,
+          spaceBetween: sliderGap,
+          centeredSlides: shouldCenterSlides,
           watchSlidesProgress: true,
           navigation: navigationConfig,
           pagination: paginationConfig,
           slideActiveClass: 'is-active',
           slidePrevClass: 'is-previous',
           slideNextClass: 'is-next',
-          autoplay: {
-            delay: AUTOPLAY_DELAY_MS,
-            disableOnInteraction: false,
-            pauseOnMouseEnter: true,
-          },
+          autoplay: autoplayConfig,
           on: {
             init: function (swiperInstance) {
               if (paginationEl) {
@@ -129,10 +136,10 @@ window.Webflow.push(async () => {
           },
           breakpoints: {
             480: {
-              spaceBetween: SLIDER_GAP / 2,
+              spaceBetween: parseInt(sliderGap) / 2,
             },
             768: {
-              spaceBetween: SLIDER_GAP / 1.5,
+              spaceBetween: parseInt(sliderGap) / 1.5,
             },
           },
         });
