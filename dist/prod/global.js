@@ -2,6 +2,10 @@ if (window.SCRIPTS_ENV === 'dev') {
   window.loadLocalScript('http://localhost:3000/global.js');
 } else {
   (() => {
+  var __defProp = Object.defineProperty;
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+
   // src/utils/alpine-webflow.ts
   var AlpineJSWebflow = class {
     constructor() {
@@ -32,14 +36,14 @@ if (window.SCRIPTS_ENV === 'dev') {
       return alpineAttributes;
     }
     wrapInTemplate(el) {
-      var _a2;
+      var _a;
       const template = document.createElement("template");
       const attributes = this.getAlpineAttributes(el);
       attributes.forEach((a) => {
         template.setAttribute(a.name, a.value);
         el.removeAttribute(a.name);
       });
-      (_a2 = el.parentNode) == null ? void 0 : _a2.insertBefore(template, el);
+      (_a = el.parentNode) == null ? void 0 : _a.insertBefore(template, el);
       template.content.appendChild(el);
     }
     replaceDotAttributes(el) {
@@ -95,6 +99,45 @@ if (window.SCRIPTS_ENV === 'dev') {
     }
   }
 
+  // src/utils/lazy-load-videos.ts
+  var LazyLoadVideoEmbeds = class {
+    constructor() {
+      __publicField(this, "observer");
+      this.observer = new IntersectionObserver(this.handleIntersection.bind(this), {
+        rootMargin: "0px 0px 200px 0px",
+        // Load iframe 200px before it's fully in view
+        threshold: 0
+        // Trigger when any part of the iframe enters the viewport
+      });
+    }
+    init() {
+      const iframesToLoad = document.querySelectorAll("iframe.embedly-embed");
+      iframesToLoad.forEach((iframe) => {
+        const originalSrc = iframe.getAttribute("src");
+        if (originalSrc) {
+          iframe.removeAttribute("src");
+          iframe.setAttribute("data-src", originalSrc);
+        }
+        this.observer.observe(iframe);
+      });
+    }
+    loadIframe(iframe) {
+      const src = iframe.dataset.src;
+      if (src) {
+        iframe.src = src;
+        iframe.removeAttribute("data-src");
+        this.observer.unobserve(iframe);
+      }
+    }
+    handleIntersection(entries) {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && entry.target instanceof HTMLIFrameElement) {
+          this.loadIframe(entry.target);
+        }
+      });
+    }
+  };
+
   // src/components/image-card.ts
   var DATA_ATTR_SELECTORS = {
     CARD: "image-card",
@@ -113,10 +156,18 @@ if (window.SCRIPTS_ENV === 'dev') {
   }
 
   // src/global.ts
-  var _a;
-  (_a = window.Webflow) == null ? void 0 : _a.push(() => {
+  document.addEventListener("DOMContentLoaded", () => {
+    gsap.registerPlugin(ScrollTrigger);
+    new LazyLoadVideoEmbeds().init();
+  });
+  window.Webflow = window.Webflow || [];
+  window.Webflow.push(() => {
+    disableWebflowScroll();
     setImageCardAriaLabel();
     initBugHerd();
   });
+  function disableWebflowScroll() {
+    jQuery(document).off("click.wf-scroll");
+  }
 })();
 }

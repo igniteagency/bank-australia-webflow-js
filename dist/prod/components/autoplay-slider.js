@@ -70,7 +70,6 @@ if (window.SCRIPTS_ENV === 'dev') {
           disableOnInteraction: false,
           pauseOnMouseEnter: true
         } : false;
-        console.debug({ shouldLoop, shouldCenterSlides, autoplayConfig });
         try {
           const swiper = new Swiper(swiperEl, {
             loop: shouldLoop,
