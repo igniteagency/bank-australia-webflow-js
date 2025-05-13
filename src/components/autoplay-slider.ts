@@ -85,8 +85,6 @@ window.Webflow.push(async () => {
           }
         : false;
 
-      console.debug({ shouldLoop, shouldCenterSlides, autoplayConfig });
-
       // Initialize Swiper with autoplay
       try {
         const swiper = new Swiper(swiperEl, {
