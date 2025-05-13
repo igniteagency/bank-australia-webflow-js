@@ -1,11 +1,17 @@
 import type { Webflow } from '@finsweet/ts-utils';
 import type Alpine from 'alpinejs';
+import type GSAP from 'gsap';
+import type ScrollTrigger from 'gsap/ScrollTrigger';
+import type jQuery from 'jquery';
 
 import { loadExternalScript } from '$utils/external-script-embed';
 
 export type SCRIPTS_ENV = 'dev' | 'prod';
 
 declare global {
+  gsap: GSAP;
+  ScrollTrigger: typeof ScrollTrigger;
+
   interface Window {
     JS_SCRIPTS: Set<string> | undefined;
     Webflow: Webflow;
@@ -33,6 +39,7 @@ declare global {
      */
     loadExternalScript: typeof loadExternalScript;
 
+    jQuery: typeof jQuery;
     Alpine: typeof Alpine;
   }
 
