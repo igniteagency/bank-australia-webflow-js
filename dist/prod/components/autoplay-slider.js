@@ -29,6 +29,7 @@ if (window.SCRIPTS_ENV === 'dev') {
       const LOOP_ATTRIBUTE = "data-slider-loop";
       const SLIDER_GAP_OVERRIDE_ATTR = "data-slider-gap";
       const CENTERED_SLIDES_ATTRIBUTE = "data-slider-centered";
+      const SLIDE_CLICK_NAV_ATTRIBUTE = "data-slider-slide-click-nav";
       document.querySelectorAll(SECTION_SELECTOR).forEach((sliderSectionEl) => {
         const swiperEl = sliderSectionEl.querySelector(".swiper");
         const navPrevButtonEl = sliderSectionEl.querySelector(NAV_PREV_BUTTON_SELECTOR);
@@ -38,6 +39,7 @@ if (window.SCRIPTS_ENV === 'dev') {
         const shouldLoop = sliderSectionEl.getAttribute(LOOP_ATTRIBUTE) === "true" ? true : false;
         const sliderGap = sliderSectionEl.getAttribute(SLIDER_GAP_OVERRIDE_ATTR) || DEFAULT_SLIDER_GAP;
         const shouldCenterSlides = sliderSectionEl.getAttribute(CENTERED_SLIDES_ATTRIBUTE) === "true" ? true : false;
+        const shouldSlideClickNav = sliderSectionEl.getAttribute(SLIDE_CLICK_NAV_ATTRIBUTE) === "true" ? true : false;
         if (!swiperEl) {
           console.debug("No swiper element found in the slider section", sliderSectionEl);
           return;
@@ -75,6 +77,7 @@ if (window.SCRIPTS_ENV === 'dev') {
             loop: shouldLoop,
             slidesPerView: "auto",
             slidesPerGroup: 1,
+            noSwipingSelector: "a",
             speed: SLIDER_TRANSITION_SPEED_MS,
             spaceBetween: sliderGap,
             centeredSlides: shouldCenterSlides,
@@ -94,19 +97,21 @@ if (window.SCRIPTS_ENV === 'dev') {
                     `${SLIDER_TRANSITION_SPEED_MS}ms`
                   );
                 }
-                const slides = swiperEl.querySelectorAll(".swiper-slide");
-                slides.forEach((slide) => {
-                  slide.addEventListener("click", () => {
-                    if (!slide.classList.contains("is-active")) {
-                      const clickedSlide = slide;
-                      if (clickedSlide.classList.contains("is-previous")) {
-                        swiperInstance.slidePrev();
-                      } else if (clickedSlide.classList.contains("is-next")) {
-                        swiperInstance.slideNext();
+                if (shouldSlideClickNav) {
+                  const slides = swiperEl.querySelectorAll(".swiper-slide");
+                  slides.forEach((slide) => {
+                    slide.addEventListener("click", () => {
+                      if (!slide.classList.contains("is-active")) {
+                        const clickedSlide = slide;
+                        if (clickedSlide.classList.contains("is-previous")) {
+                          swiperInstance.slidePrev();
+                        } else if (clickedSlide.classList.contains("is-next")) {
+                          swiperInstance.slideNext();
+                        }
                       }
-                    }
+                    });
                   });
-                });
+                }
               }
             },
             observer: true,
