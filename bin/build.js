@@ -1,3 +1,4 @@
+import browserslistToEsbuild from 'browserslist-to-esbuild';
 import esbuild from 'esbuild';
 import fs from 'fs';
 import path from 'path';
@@ -6,6 +7,7 @@ import { LOCAL_SCRIPT_URL } from 'src/constants';
 const DEV_BUILD_PATH = './dist/dev';
 const PROD_BUILD_PATH = './dist/prod';
 const production = process.env.NODE_ENV === 'production';
+const productionTarget = browserslistToEsbuild('defaults');
 
 const BUILD_DIRECTORY = !production ? DEV_BUILD_PATH : PROD_BUILD_PATH;
 
@@ -46,7 +48,7 @@ const wrapperPlugin = {
       if (production) {
         try {
           const allFiles = getAllFiles(BUILD_DIRECTORY);
-          console.log('All files found:', allFiles);
+          // console.log('All files found:', allFiles);
 
           for (const filePath of allFiles) {
             if (filePath.endsWith('.js')) {
@@ -63,9 +65,9 @@ const wrapperPlugin = {
 
               // Write back to file
               fs.writeFileSync(filePath, wrappedCode);
-              console.log(
-                `Successfully wrapped ${relativePath} with environment conditional logic`
-              );
+              // console.log(
+              //   `Successfully wrapped ${relativePath} with environment conditional logic`
+              // );
             }
           }
         } catch (error) {
@@ -84,11 +86,12 @@ const buildSettings = {
   minify: false,
   sourcemap: !production,
   treeShaking: true,
-  target: production ? 'es2017' : 'esnext',
+  target: production ? productionTarget : 'esnext',
   plugins: [wrapperPlugin],
   format: 'iife',
   external: ['swiper', 'swiper/modules'],
   legalComments: 'inline',
+  platform: 'browser',
 };
 
 // Function to recursively delete directory contents
@@ -107,18 +110,24 @@ const deleteDirectoryContents = (dirPath) => {
   }
 };
 
-// Clean the build directory before starting the build
-deleteDirectoryContents(BUILD_DIRECTORY);
+try {
+  // Clean the build directory before starting the build
+  deleteDirectoryContents(BUILD_DIRECTORY);
 
-if (!production) {
-  let ctx = await esbuild.context(buildSettings);
+  if (!production) {
+    let ctx = await esbuild.context(buildSettings);
 
-  let { port } = await ctx.serve({
-    servedir: BUILD_DIRECTORY,
-    port: 3000,
-  });
+    let { port } = await ctx.serve({
+      servedir: BUILD_DIRECTORY,
+      port: 3000,
+    });
 
-  console.log(`Serving at http://localhost:${port}`);
-} else {
-  esbuild.build(buildSettings).catch(() => process.exit(1));
+    console.log(`Serving at http://localhost:${port}`);
+  } else {
+    console.log(productionTarget);
+    esbuild.build(buildSettings);
+  }
+} catch (error) {
+  console.error('Error in build:', error);
+  process.exit(1);
 }
