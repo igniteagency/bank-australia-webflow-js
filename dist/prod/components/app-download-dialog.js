@@ -49,11 +49,11 @@ if (window.SCRIPTS_ENV === 'dev') {
         dialog.classList.remove("closing");
         dialog.removeEventListener("close", handleDialogClose);
         dialog.removeEventListener("click", handleOutsideClick);
-        closeButton == null ? void 0 : closeButton.removeEventListener("click", handleCloseClick);
+        closeButton?.removeEventListener("click", handleCloseClick);
       };
       dialog.addEventListener("close", handleDialogClose);
       dialog.addEventListener("click", handleOutsideClick);
-      closeButton == null ? void 0 : closeButton.addEventListener("click", handleCloseClick);
+      closeButton?.addEventListener("click", handleCloseClick);
     };
     function closeDialog(dialog) {
       dialog.classList.add("closing");

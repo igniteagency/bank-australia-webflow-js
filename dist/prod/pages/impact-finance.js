@@ -2,30 +2,25 @@ if (window.SCRIPTS_ENV === 'dev') {
   window.loadLocalScript('http://localhost:3000/pages/impact-finance.js');
 } else {
   (() => {
-  var __defProp = Object.defineProperty;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-
   // src/pages/impact-finance.ts
   var ImpactFinancePie = class {
+    SELECTOR_SECTION_IMPACT_PIE = '[data-el="section-impact-pie"]';
+    SELECTOR_TIMELINE_STAT = '[data-el="timeline-stat"]';
+    SELECTOR_CIRCLE_PIE = '[data-el="circle-pie"]';
+    SELECTOR_TOTAL_ASSETS = '[data-el="total-assets"]';
+    SELECTOR_IMPACT_ASSETS = '[data-el="impact-assets"]';
+    TOTAL_SECTIONS_PROPERTY = "--_data-total-stat-sections";
+    ACTIVE_SECTION_PROPERTY = "--_data-active-stat-section";
+    PIE_FILL_PROPERTY = "--_pie-fill-turn";
+    section;
+    stats;
+    circlePie;
+    currentIndex = 1;
+    totalStatsCount;
+    assetRatios;
     constructor() {
-      __publicField(this, "SELECTOR_SECTION_IMPACT_PIE", '[data-el="section-impact-pie"]');
-      __publicField(this, "SELECTOR_TIMELINE_STAT", '[data-el="timeline-stat"]');
-      __publicField(this, "SELECTOR_CIRCLE_PIE", '[data-el="circle-pie"]');
-      __publicField(this, "SELECTOR_TOTAL_ASSETS", '[data-el="total-assets"]');
-      __publicField(this, "SELECTOR_IMPACT_ASSETS", '[data-el="impact-assets"]');
-      __publicField(this, "TOTAL_SECTIONS_PROPERTY", "--_data-total-stat-sections");
-      __publicField(this, "ACTIVE_SECTION_PROPERTY", "--_data-active-stat-section");
-      __publicField(this, "PIE_FILL_PROPERTY", "--_pie-fill-turn");
-      __publicField(this, "section");
-      __publicField(this, "stats");
-      __publicField(this, "circlePie");
-      __publicField(this, "currentIndex", 1);
-      __publicField(this, "totalStatsCount");
-      __publicField(this, "assetRatios");
-      var _a, _b;
       this.section = document.querySelector(this.SELECTOR_SECTION_IMPACT_PIE);
-      this.stats = Array.from((_b = (_a = this.section) == null ? void 0 : _a.querySelectorAll(this.SELECTOR_TIMELINE_STAT)) != null ? _b : []);
+      this.stats = Array.from(this.section?.querySelectorAll(this.SELECTOR_TIMELINE_STAT) ?? []);
       this.circlePie = document.querySelector(this.SELECTOR_CIRCLE_PIE);
       this.totalStatsCount = this.stats.length;
       this.assetRatios = [];
@@ -105,7 +100,7 @@ if (window.SCRIPTS_ENV === 'dev') {
       return num;
     }
   };
-  window.Webflow || (window.Webflow = []);
+  window.Webflow ||= [];
   window.Webflow.push(() => {
     new ImpactFinancePie();
   });

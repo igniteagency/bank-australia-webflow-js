@@ -32,14 +32,13 @@ if (window.SCRIPTS_ENV === 'dev') {
       return alpineAttributes;
     }
     wrapInTemplate(el) {
-      var _a;
       const template = document.createElement("template");
       const attributes = this.getAlpineAttributes(el);
       attributes.forEach((a) => {
         template.setAttribute(a.name, a.value);
         el.removeAttribute(a.name);
       });
-      (_a = el.parentNode) == null ? void 0 : _a.insertBefore(template, el);
+      el.parentNode?.insertBefore(template, el);
       template.content.appendChild(el);
     }
     replaceDotAttributes(el) {

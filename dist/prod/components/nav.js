@@ -17,8 +17,8 @@ if (window.SCRIPTS_ENV === 'dev') {
     const mobileJoinLink = document.querySelector("#mobile-join-link");
     const desktopMediaQuery = window.matchMedia("(min-width: 992px)");
     const header = document.querySelector("#main-header");
-    const headerSiblings = (header == null ? void 0 : header.parentElement) ? Array.from(header.parentElement.children).filter((el) => el !== header) : [];
-    const navSiblings = (nav == null ? void 0 : nav.parentElement) ? Array.from(nav.parentElement.children).filter((el) => el !== nav) : [];
+    const headerSiblings = header?.parentElement ? Array.from(header.parentElement.children).filter((el) => el !== header) : [];
+    const navSiblings = nav?.parentElement ? Array.from(nav.parentElement.children).filter((el) => el !== nav) : [];
     const levelOneListItems = document.querySelectorAll(`[data-level="one"] > li`);
     const navContentTopLevelElements = document.querySelectorAll(
       `.nav-content > *:not(ul, [data-has-nav-close-button])`
@@ -52,10 +52,10 @@ if (window.SCRIPTS_ENV === 'dev') {
       });
     }
     function makeNavContentInert() {
-      navContent == null ? void 0 : navContent.setAttribute("inert", "");
+      navContent?.setAttribute("inert", "");
     }
     function removeNavContentInert() {
-      navContent == null ? void 0 : navContent.removeAttribute("inert");
+      navContent?.removeAttribute("inert");
     }
     function makeNavLevelOneItemsInert() {
       navContentTopLevelElements.forEach((topLevelNavContentItem) => {
@@ -91,11 +91,10 @@ if (window.SCRIPTS_ENV === 'dev') {
       });
     }
     function toggleDisclosureWidget(disclosureWidgetButton, disclosureWidgetPanel) {
-      var _a, _b, _c, _d;
       if (disclosureWidgetButton.getAttribute("aria-expanded") === "true") {
         disclosureWidgetButton.setAttribute("aria-expanded", "false");
         disclosureWidgetPanel.setAttribute("hidden", "");
-        if (((_b = (_a = disclosureWidgetPanel.parentElement) == null ? void 0 : _a.parentElement) == null ? void 0 : _b.dataset.level) === "one") {
+        if (disclosureWidgetPanel.parentElement?.parentElement?.dataset.level === "one") {
           if (desktopMediaQuery.matches) {
             removePageInert();
           } else {
@@ -106,7 +105,7 @@ if (window.SCRIPTS_ENV === 'dev') {
       } else {
         disclosureWidgetButton.setAttribute("aria-expanded", "true");
         disclosureWidgetPanel.removeAttribute("hidden");
-        if (((_d = (_c = disclosureWidgetPanel.parentElement) == null ? void 0 : _c.parentElement) == null ? void 0 : _d.dataset.level) === "one") {
+        if (disclosureWidgetPanel.parentElement?.parentElement?.dataset.level === "one") {
           if (desktopMediaQuery.matches) {
             makePageInert();
           } else {
@@ -118,7 +117,7 @@ if (window.SCRIPTS_ENV === 'dev') {
     }
     function collapseDisclosureWidgetsWhenClickingOutsideNav(event) {
       const target = event.target;
-      if (!desktopMediaQuery.matches && navContent && !navContent.contains(target) && !(navButton == null ? void 0 : navButton.contains(target))) {
+      if (!desktopMediaQuery.matches && navContent && !navContent.contains(target) && !navButton?.contains(target)) {
         hideNavContent();
       }
       disclosureWidgetPanels.forEach((disclosureWidgetPanel) => {
@@ -201,14 +200,13 @@ if (window.SCRIPTS_ENV === 'dev') {
     }
     function initialiseDisclosureWidgets() {
       listItemsWithChildren.forEach((listItem, index) => {
-        var _a, _b;
         let disclosureWidgetButton = listItem.querySelector(":scope > button");
         const disclosureWidgetPanel = listItem.querySelector(":scope > ul");
         if (!disclosureWidgetPanel) return;
-        if (!desktopMediaQuery.matches || desktopMediaQuery.matches && ((_a = listItem.parentElement) == null ? void 0 : _a.dataset.level) === "one") {
+        if (!desktopMediaQuery.matches || desktopMediaQuery.matches && listItem.parentElement?.dataset.level === "one") {
           if (disclosureWidgetButton) {
             disclosureWidgetButton.setAttribute("aria-expanded", "false");
-            if ((_b = disclosureWidgetButton.parentElement) == null ? void 0 : _b.dataset) {
+            if (disclosureWidgetButton.parentElement?.dataset) {
               disclosureWidgetButton.parentElement.dataset.hasChildAriaExpanded = "false";
             }
             disclosureWidgetButton.setAttribute("aria-controls", `nav__ul-${index}`);
@@ -225,33 +223,33 @@ if (window.SCRIPTS_ENV === 'dev') {
     function handleMediaQueryChange(event) {
       initialiseDisclosureWidgets();
       if (event.matches) {
-        navContent == null ? void 0 : navContent.removeAttribute("hidden");
-        navButton == null ? void 0 : navButton.setAttribute("hidden", "");
-        navCloseButton == null ? void 0 : navCloseButton.setAttribute("hidden", "");
-        searchLinkText == null ? void 0 : searchLinkText.classList.add("visually-hidden");
-        mobileLogInLink == null ? void 0 : mobileLogInLink.setAttribute("hidden", "");
-        mobileJoinLink == null ? void 0 : mobileJoinLink.setAttribute("hidden", "");
-        navContent == null ? void 0 : navContent.removeAttribute("role");
-        navContent == null ? void 0 : navContent.removeAttribute("aria-labelledby");
+        navContent?.removeAttribute("hidden");
+        navButton?.setAttribute("hidden", "");
+        navCloseButton?.setAttribute("hidden", "");
+        searchLinkText?.classList.add("visually-hidden");
+        mobileLogInLink?.setAttribute("hidden", "");
+        mobileJoinLink?.setAttribute("hidden", "");
+        navContent?.removeAttribute("role");
+        navContent?.removeAttribute("aria-labelledby");
         hideNavContent();
         removeNavLevelOneItemsInert();
         removeNavContentInert();
         removePageInert();
-        navButton == null ? void 0 : navButton.removeEventListener("click", navButtonOnClick);
+        navButton?.removeEventListener("click", navButtonOnClick);
       } else {
-        navButton == null ? void 0 : navButton.removeAttribute("hidden");
-        navCloseButton == null ? void 0 : navCloseButton.removeAttribute("hidden");
-        searchLinkText == null ? void 0 : searchLinkText.classList.remove("visually-hidden");
-        mobileLogInLink == null ? void 0 : mobileLogInLink.removeAttribute("hidden");
-        mobileJoinLink == null ? void 0 : mobileJoinLink.removeAttribute("hidden");
-        navContent == null ? void 0 : navContent.setAttribute("role", "group");
-        navContent == null ? void 0 : navContent.setAttribute("aria-labelledby", "nav-toggle");
+        navButton?.removeAttribute("hidden");
+        navCloseButton?.removeAttribute("hidden");
+        searchLinkText?.classList.remove("visually-hidden");
+        mobileLogInLink?.removeAttribute("hidden");
+        mobileJoinLink?.removeAttribute("hidden");
+        navContent?.setAttribute("role", "group");
+        navContent?.setAttribute("aria-labelledby", "nav-toggle");
         if (navIsShown) {
           removeNavContentInert();
         } else {
           makeNavContentInert();
         }
-        navButton == null ? void 0 : navButton.addEventListener("click", navButtonOnClick);
+        navButton?.addEventListener("click", navButtonOnClick);
       }
     }
     document.documentElement.style.setProperty(
@@ -262,9 +260,9 @@ if (window.SCRIPTS_ENV === 'dev') {
       navContent.style.transition = "none";
       nav.classList.add("enhanced");
     }
-    navCloseButton == null ? void 0 : navCloseButton.addEventListener("click", () => {
+    navCloseButton?.addEventListener("click", () => {
       hideNavContent();
-      navButton == null ? void 0 : navButton.focus();
+      navButton?.focus();
     });
     document.addEventListener("keydown", collapseDisclosureWidgetsWhenPressingEscape);
     document.addEventListener("focusin", collapseDisclosureWidgetsWhenTabbingOutside);
@@ -272,7 +270,7 @@ if (window.SCRIPTS_ENV === 'dev') {
     desktopMediaQuery.addEventListener("change", handleMediaQueryChange);
     handleMediaQueryChange(desktopMediaQuery);
     setTimeout(() => {
-      navContent == null ? void 0 : navContent.style.removeProperty("transition");
+      navContent?.style.removeProperty("transition");
     }, 0);
     window.EXECUTED_SCRIPT.push("global-nav");
   })();

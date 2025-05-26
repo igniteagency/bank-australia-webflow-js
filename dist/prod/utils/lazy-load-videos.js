@@ -2,14 +2,10 @@ if (window.SCRIPTS_ENV === 'dev') {
   window.loadLocalScript('http://localhost:3000/utils/lazy-load-videos.js');
 } else {
   (() => {
-  var __defProp = Object.defineProperty;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-
   // src/utils/lazy-load-videos.ts
   var LazyLoadVideoEmbeds = class {
+    observer;
     constructor() {
-      __publicField(this, "observer");
       this.observer = new IntersectionObserver(this.handleIntersection.bind(this), {
         rootMargin: "0px 0px 200px 0px",
         // Load iframe 200px before it's fully in view
