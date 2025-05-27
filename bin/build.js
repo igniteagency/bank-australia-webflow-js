@@ -7,7 +7,8 @@ import { LOCAL_SCRIPT_URL } from 'src/constants';
 const DEV_BUILD_PATH = './dist/dev';
 const PROD_BUILD_PATH = './dist/prod';
 const production = process.env.NODE_ENV === 'production';
-const productionTarget = browserslistToEsbuild('defaults');
+// const productionTarget = browserslistToEsbuild('defaults');
+const productionTarget = browserslistToEsbuild('since 2022-11');
 
 const BUILD_DIRECTORY = !production ? DEV_BUILD_PATH : PROD_BUILD_PATH;
 
