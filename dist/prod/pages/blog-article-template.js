@@ -1,8 +1,8 @@
 if (window.SCRIPTS_ENV === 'dev') {
-  window.loadLocalScript('http://localhost:3000/pages/blog-article.js');
+  window.loadLocalScript('http://localhost:3000/pages/blog-article-template.js');
 } else {
   (() => {
-  // src/pages/blog-article.ts
+  // src/pages/blog-article-template.ts
   function setGallerySliderDataAttribute() {
     const gallerySliderElList = document.querySelectorAll('[data-gallery-layout="Image Slider"]');
     gallerySliderElList.forEach((gallerySliderEl) => {
