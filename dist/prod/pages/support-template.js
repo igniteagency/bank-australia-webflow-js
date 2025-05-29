@@ -10,36 +10,44 @@ if (window.SCRIPTS_ENV === 'dev') {
       console.error("No content rich text found", CONTENT_SELECTOR);
       return;
     }
-    const h2s = Array.from(faqContent.querySelectorAll("h2"));
+    const questionHeadings = Array.from(faqContent.querySelectorAll("h2, h3"));
+    console.log({ questionHeadings });
     const faqEntities = [];
     let i = 0;
-    while (i < h2s.length) {
-      const h2 = h2s[i];
-      if (h2.textContent?.includes("?")) {
-        let answerText = "";
-        let next = h2.nextSibling;
-        while (next && !(next.nodeType === 1 && next.tagName === "H2")) {
+    while (i < questionHeadings.length) {
+      const heading = questionHeadings[i];
+      if (heading.textContent?.includes("?")) {
+        let answerHTML = "";
+        let next = heading.nextSibling;
+        const stopTag = heading.tagName;
+        while (next && !(next.nodeType === 1 && next.tagName === stopTag)) {
           if (next.nodeType === 1) {
-            answerText += next.innerText + "\n";
+            const html = next.outerHTML;
+            if (html && html.trim() !== "" && html.replace(/<[^>]+>/g, "").trim() !== "") {
+              answerHTML += html + "\n";
+            }
           } else if (next.nodeType === 3) {
-            answerText += next.nodeValue;
+            if (next.nodeValue && next.nodeValue.trim() !== "") {
+              answerHTML += next.nodeValue;
+            }
           }
           next = next.nextSibling;
         }
-        answerText = answerText.trim();
-        if (answerText) {
+        answerHTML = answerHTML.trim();
+        if (answerHTML) {
           faqEntities.push({
             "@type": "Question",
-            name: h2.textContent.trim(),
+            name: heading.textContent.trim(),
             acceptedAnswer: {
               "@type": "Answer",
-              text: answerText
+              text: answerHTML
             }
           });
         }
       }
       i++;
     }
+    console.log({ faqEntities });
     if (faqEntities.length > 0) {
       const schema = {
         "@context": "https://schema.org",
@@ -52,8 +60,7 @@ if (window.SCRIPTS_ENV === 'dev') {
       document.head.appendChild(script);
     }
   }
-  window.Webflow = window.Webflow || [];
-  window.Webflow.push(() => {
+  document.addEventListener("DOMContentLoaded", () => {
     processInlineFAQSchema();
   });
 })();
