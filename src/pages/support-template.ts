@@ -18,10 +18,11 @@ function processInlineFAQSchema() {
       let answerText = '';
       let next = h2.nextSibling as HTMLElement | null;
       while (next && !(next.nodeType === 1 && next.tagName === 'H2')) {
-        // If it's an element, get its textContent; if text node, get nodeValue
         if (next.nodeType === 1) {
+          // If it's an element, get its textContent
           answerText += (next as HTMLElement).innerText + '\n';
         } else if (next.nodeType === 3) {
+          // if text node, get nodeValue
           answerText += next.nodeValue;
         }
         next = next.nextSibling as HTMLElement | null;
@@ -56,4 +57,7 @@ function processInlineFAQSchema() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', processInlineFAQSchema);
+window.Webflow = window.Webflow || [];
+window.Webflow.push(() => {
+  processInlineFAQSchema();
+});
