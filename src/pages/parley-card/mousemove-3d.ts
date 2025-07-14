@@ -1,6 +1,6 @@
 class ParleyCardMousemove3D {
   private readonly SECTION_SELECTOR = '.section-parley-account-types';
-  private readonly CARDS_SELECTOR = '.parley-account-types_card-content-wrapper';
+  private readonly CARDS_SELECTOR = '.parley-account-types_card-item';
   private readonly MOVER_SELECTOR = '.parley-account-types_cursor_component';
   private readonly MAX_ROT_Y = 40; // max ±Y tilt in degrees
   private readonly MAX_ROT_X = 20; // max ±X tilt in degrees
