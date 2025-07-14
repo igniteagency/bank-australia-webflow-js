@@ -41,6 +41,8 @@ declare global {
 
     jQuery: typeof jQuery;
     Alpine: typeof Alpine;
+
+    IG_BUGHERD_ENABLED: boolean;
   }
 
   // Extend `querySelector` and `querySelectorAll` function to stop the nagging of converting `Element` to `HTMLElement` all the time

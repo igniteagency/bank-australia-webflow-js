@@ -8,41 +8,51 @@ function processInlineFAQSchema() {
     return;
   }
 
-  const h2s = Array.from(faqContent.querySelectorAll('h2'));
+  // Select both H2 and H3 as questions
+  const questionHeadings = Array.from(faqContent.querySelectorAll('h2, h3'));
+  console.log({ questionHeadings });
   const faqEntities = [];
   let i = 0;
-  while (i < h2s.length) {
-    const h2 = h2s[i];
-    if (h2.textContent?.includes('?')) {
-      // Collect all answer nodes (siblings after H2 until next H2)
-      let answerText = '';
-      let next = h2.nextSibling as HTMLElement | null;
-      while (next && !(next.nodeType === 1 && next.tagName === 'H2')) {
+  while (i < questionHeadings.length) {
+    const heading = questionHeadings[i];
+    if (heading.textContent?.includes('?')) {
+      // Collect all answer nodes (siblings after heading until next heading of the same level)
+      let answerHTML = '';
+      let next = heading.nextSibling as HTMLElement | null;
+      const stopTag = heading.tagName; // 'H2' or 'H3'
+      while (next && !(next.nodeType === 1 && (next as HTMLElement).tagName === stopTag)) {
         if (next.nodeType === 1) {
-          // If it's an element, get its textContent
-          answerText += (next as HTMLElement).innerText + '\n';
+          // If it's an element, only add if outerHTML is not empty or whitespace
+          const html = (next as HTMLElement).outerHTML;
+          if (html && html.trim() !== '' && html.replace(/<[^>]+>/g, '').trim() !== '') {
+            answerHTML += html + '\n';
+          }
         } else if (next.nodeType === 3) {
           // if text node, get nodeValue
-          answerText += next.nodeValue;
+          if (next.nodeValue && next.nodeValue.trim() !== '') {
+            answerHTML += next.nodeValue;
+          }
         }
         next = next.nextSibling as HTMLElement | null;
       }
       // Clean up whitespace
-      answerText = answerText.trim();
+      answerHTML = answerHTML.trim();
       // Add to FAQ entities if answer is not empty
-      if (answerText) {
+      if (answerHTML) {
         faqEntities.push({
           '@type': 'Question',
-          name: h2.textContent.trim(),
+          name: heading.textContent.trim(),
           acceptedAnswer: {
             '@type': 'Answer',
-            text: answerText,
+            text: answerHTML,
           },
         });
       }
     }
     i++;
   }
+
+  console.log({ faqEntities });
 
   if (faqEntities.length > 0) {
     const schema = {
@@ -57,7 +67,6 @@ function processInlineFAQSchema() {
   }
 }
 
-window.Webflow = window.Webflow || [];
-window.Webflow.push(() => {
+document.addEventListener('DOMContentLoaded', () => {
   processInlineFAQSchema();
 });
