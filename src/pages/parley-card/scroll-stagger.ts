@@ -3,7 +3,7 @@ class ParleyCardStagger {
     '.parley-card-showcase_cards-start .parley-card-showcase_start-card';
   private readonly TO_SLOTS_SELECTOR =
     '.parley-card-showcase_cards-end .parley-card-showcase_end-card';
-  private readonly SHADOW_WRAP_SELECTOR = '.parley-card-showcase_end-card-shadow-subwrap';
+  private readonly SHADOW_WRAP_SELECTOR = '.parley-card_shadow-wrap';
   private readonly CARDS_TO_TRIGGER_SELECTOR = '.parley-card-showcase_cards-end';
   private CARD_DURATION = 0.6;
   private STAGGER = 0.15;
