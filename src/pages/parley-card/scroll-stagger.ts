@@ -1,4 +1,10 @@
 class ParleyCardStagger {
+  private readonly FROM_CARDS_SELECTOR =
+    '.parley-card-showcase_cards-start .parley-card-showcase_start-card';
+  private readonly TO_SLOTS_SELECTOR =
+    '.parley-card-showcase_cards-end .parley-card-showcase_end-card';
+  private readonly SHADOW_WRAP_SELECTOR = '.parley-card-showcase_end-card-shadow-subwrap';
+  private readonly CARDS_TO_TRIGGER_SELECTOR = '.parley-card-showcase_cards-end';
   private CARD_DURATION = 0.6;
   private STAGGER = 0.15;
   private SHADOW_START_AT = 0.8;
@@ -7,35 +13,12 @@ class ParleyCardStagger {
   private toSlots: HTMLElement[];
 
   constructor() {
-    this.fromCards = gsap.utils.toArray(
-      '.parley-card-showcase_cards-start-wrapper .parley-card-showcase_card-item'
-    );
-    this.toSlots = gsap.utils.toArray(
-      '.parley-card-showcase_cards-end-wrapper .parley-card-showcase_card-item'
-    );
-    this.logDomNodes();
+    this.fromCards = gsap.utils.toArray(this.FROM_CARDS_SELECTOR);
+    this.toSlots = gsap.utils.toArray(this.TO_SLOTS_SELECTOR);
     this.setupCardAnimation();
     this.setupScrollTriggerRefresh();
 
     window.IS_DEBUG_MODE && console.debug('Initial script execution finished.');
-  }
-
-  private logDomNodes() {
-    if (this.fromCards.length === 0) {
-      console.warn(
-        "No '.parley-card-showcase_cards-start-wrapper .parley-card-showcase_card-item' elements found."
-      );
-    } else {
-      console.debug(`Found ${this.fromCards.length} 'fromCards'`);
-    }
-
-    if (this.toSlots.length === 0 && this.fromCards.length > 0) {
-      console.warn(
-        "No '.parley-card-showcase_cards-end-wrapper .parley-card-showcase_card-item' elements found for the first animation."
-      );
-    } else if (this.fromCards.length > 0) {
-      console.debug(`Found ${this.toSlots.length} 'toSlots'`);
-    }
   }
 
   private setupCardAnimation() {
@@ -62,10 +45,9 @@ class ParleyCardStagger {
           return;
         }
         const state = Flip.getState(card, { props: 'filter,opacity,transform' });
-        slot.appendChild(card);
-        const shadowEl = slot.querySelector<HTMLElement>('.card-shadow-wrap');
+        const shadowEl = slot.querySelector(this.SHADOW_WRAP_SELECTOR);
         const labelTime = slotIndex * this.STAGGER;
-        tl.addLabel(`card${i}`, labelTime);
+
         const flipTween = Flip.from(state, {
           targets: card,
           duration: this.CARD_DURATION,
@@ -74,13 +56,20 @@ class ParleyCardStagger {
           absolute: true,
           props: 'filter,opacity,transform',
         });
-        tl.add(flipTween, `card${i}`);
+
+        slot.appendChild(card);
+
+        tl.addLabel(`card_${i}`, labelTime);
+
+        tl.add(flipTween, `card_${i}`);
+
         tl.fromTo(
           card,
           { rotateY: 0, transformOrigin: 'center center' },
           { rotateY: -50, duration: this.CARD_DURATION, ease: 'power1.inOut' },
-          `card${i}`
+          `card_${i}`
         );
+
         if (shadowEl) {
           gsap.set(shadowEl, { opacity: 0, filter: 'blur(100px)' });
           flipTween.eventCallback('onUpdate', () => {
@@ -104,12 +93,12 @@ class ParleyCardStagger {
         }
       });
 
-      const cardsToTrigger = document.querySelector('.parley-card-showcase_cards-end-wrapper');
+      const cardsToTrigger = document.querySelector(this.CARDS_TO_TRIGGER_SELECTOR);
 
       if (cardsToTrigger) {
         window.IS_DEBUG_MODE &&
           console.debug(
-            "First Animation: Creating ScrollTrigger for '.parley-card-showcase_cards-end-wrapper'"
+            `First Animation: Creating ScrollTrigger for '${this.CARDS_TO_TRIGGER_SELECTOR}'`
           );
 
         ScrollTrigger.create({
@@ -118,10 +107,13 @@ class ParleyCardStagger {
           start: 'top+=15% bottom',
           end: 'bottom bottom',
           scrub: true,
+          markers: window.IS_DEBUG_MODE,
+          id: `card-section-scrolltrigger`,
+          invalidateOnRefresh: true,
         });
       } else {
         console.warn(
-          "First Animation: '.parley-card-showcase_cards-end-wrapper' trigger not found for ScrollTrigger."
+          `First Animation: '${this.CARDS_TO_TRIGGER_SELECTOR}' trigger not found for ScrollTrigger.`
         );
       }
     } else {
@@ -135,16 +127,12 @@ class ParleyCardStagger {
   }
 
   private setupScrollTriggerRefresh() {
-    window.IS_DEBUG_MODE &&
-      console.debug("Adding window 'load' event listener for ScrollTrigger.refresh().");
-
     window.addEventListener('load', () => {
-      window.IS_DEBUG_MODE &&
-        console.debug("Window 'load' event fired. Calling ScrollTrigger.refresh().");
-
       ScrollTrigger.refresh();
+    });
 
-      window.IS_DEBUG_MODE && console.debug('ScrollTrigger.refresh() called.');
+    window.addEventListener('resize', () => {
+      ScrollTrigger.refresh();
     });
   }
 }
