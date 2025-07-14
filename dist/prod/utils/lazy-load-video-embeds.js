@@ -1,8 +1,8 @@
 if (window.SCRIPTS_ENV === 'dev') {
-  window.loadLocalScript('http://localhost:3000/utils/lazy-load-videos.js');
+  window.loadLocalScript('http://localhost:3000/utils/lazy-load-video-embeds.js');
 } else {
   (() => {
-  // src/utils/lazy-load-videos.ts
+  // src/utils/lazy-load-video-embeds.ts
   var LazyLoadVideoEmbeds = class {
     observer;
     constructor() {
