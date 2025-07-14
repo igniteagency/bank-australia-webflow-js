@@ -5,7 +5,7 @@ if (window.SCRIPTS_ENV === 'dev') {
   // src/pages/parley-card/mousemove-3d.ts
   var ParleyCardMousemove3D = class {
     SECTION_SELECTOR = ".section-parley-account-types";
-    CARDS_SELECTOR = ".parley-account-types_card-content-wrapper";
+    CARDS_SELECTOR = ".parley-account-types_card-item";
     MOVER_SELECTOR = ".parley-account-types_cursor_component";
     MAX_ROT_Y = 40;
     // max ±Y tilt in degrees
@@ -32,7 +32,6 @@ if (window.SCRIPTS_ENV === 'dev') {
       this.mover = document.querySelector(this.MOVER_SELECTOR);
       if (this.mover) {
         gsap.set(this.mover, {
-          position: "fixed",
           xPercent: -50,
           yPercent: -50
         });
