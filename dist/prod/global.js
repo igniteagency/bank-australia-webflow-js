@@ -81,7 +81,7 @@ if (window.SCRIPTS_ENV === 'dev') {
   // src/utils/bugherd-script.ts
   function initBugHerd() {
     const currentHostname = window.location.hostname;
-    if (currentHostname.includes("webflow.io")) {
+    if (currentHostname.includes("webflow.io") && window.IG_BUGHERD_ENABLED === true) {
       window.loadExternalScript(
         "https://www.bugherd.com/sidebarv2.js?apikey=alf2xg3pewxzwvuoe7c00g",
         "body",
@@ -94,7 +94,7 @@ if (window.SCRIPTS_ENV === 'dev') {
     }
   }
 
-  // src/utils/lazy-load-videos.ts
+  // src/utils/lazy-load-video-embeds.ts
   var LazyLoadVideoEmbeds = class {
     observer;
     constructor() {
