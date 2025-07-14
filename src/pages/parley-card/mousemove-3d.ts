@@ -29,7 +29,6 @@ class ParleyCardMousemove3D {
     // GSAP quickSetters for mover
     if (this.mover) {
       gsap.set(this.mover, {
-        position: 'fixed',
         xPercent: -50,
         yPercent: -50,
       });
