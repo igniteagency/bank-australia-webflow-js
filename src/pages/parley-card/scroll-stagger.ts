@@ -105,7 +105,7 @@ class ParleyCardStagger {
           animation: tl,
           trigger: cardsToTrigger,
           start: 'top+=15% bottom',
-          end: 'bottom bottom',
+          end: 'bottom 60%',
           scrub: true,
           markers: window.IS_DEBUG_MODE,
           id: `card-section-scrolltrigger`,
