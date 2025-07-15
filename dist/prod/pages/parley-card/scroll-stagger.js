@@ -40,6 +40,7 @@ if (window.SCRIPTS_ENV === 'dev') {
           const state = Flip.getState(card, { props: "filter,opacity,transform" });
           const shadowEl = slot.querySelector(this.SHADOW_WRAP_SELECTOR);
           const labelTime = slotIndex * this.STAGGER;
+          slot.appendChild(card);
           const flipTween = Flip.from(state, {
             targets: card,
             duration: this.CARD_DURATION,
@@ -48,7 +49,6 @@ if (window.SCRIPTS_ENV === 'dev') {
             absolute: true,
             props: "filter,opacity,transform"
           });
-          slot.appendChild(card);
           tl.addLabel(`card_${i}`, labelTime);
           tl.add(flipTween, `card_${i}`);
           tl.fromTo(
@@ -85,7 +85,7 @@ if (window.SCRIPTS_ENV === 'dev') {
             animation: tl,
             trigger: cardsToTrigger,
             start: "top+=15% bottom",
-            end: "bottom bottom",
+            end: "bottom 60%",
             scrub: true,
             markers: window.IS_DEBUG_MODE,
             id: `card-section-scrolltrigger`,

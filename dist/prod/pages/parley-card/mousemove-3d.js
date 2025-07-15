@@ -5,7 +5,7 @@ if (window.SCRIPTS_ENV === 'dev') {
   // src/pages/parley-card/mousemove-3d.ts
   var ParleyCardMousemove3D = class {
     SECTION_SELECTOR = ".section-parley-account-types";
-    CARDS_SELECTOR = ".parley-account-types_card-item";
+    CARDS_SELECTOR = ".parley-account-types_card";
     MOVER_SELECTOR = ".parley-account-types_cursor_component";
     MAX_ROT_Y = 40;
     // max ±Y tilt in degrees
@@ -23,6 +23,7 @@ if (window.SCRIPTS_ENV === 'dev') {
     cardSetRotY = [];
     cardSetRotX = [];
     mouseMoveHandler;
+    sectionRect = null;
     constructor() {
       this.winW = window.innerWidth;
       this.winH = window.innerHeight;
@@ -50,11 +51,13 @@ if (window.SCRIPTS_ENV === 'dev') {
         this.winH = window.innerHeight;
         this.maxDist = Math.hypot(this.winW, this.winH);
         this.updateCardRectBounds();
+        this.updateSectionRect();
       });
       this.updateCardRectBounds();
       if (this.sectionEl) {
         this.sectionEl.addEventListener("mouseenter", (e) => {
           this.updateCardRectBounds();
+          this.updateSectionRect();
           this.cards.forEach((card, i) => {
             const { rotY, rotX } = this.getCardRotation(i, e);
             gsap.to(card, {
@@ -89,9 +92,17 @@ if (window.SCRIPTS_ENV === 'dev') {
         });
       });
     }
+    updateSectionRect() {
+      this.sectionRect = this.sectionEl ? this.sectionEl.getBoundingClientRect() : null;
+    }
     _mouseMoveHandler(e) {
-      const mx = e.clientX;
-      const my = e.clientY;
+      let mx = e.clientX;
+      let my = e.clientY;
+      if (this.sectionEl) {
+        this.sectionRect = this.sectionEl.getBoundingClientRect();
+        mx = e.clientX - this.sectionRect.left;
+        my = e.clientY - this.sectionRect.top;
+      }
       if (this.moverSetX && this.moverSetY) {
         this.moverSetX(mx);
         this.moverSetY(my);
