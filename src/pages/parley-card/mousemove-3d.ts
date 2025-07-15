@@ -1,6 +1,6 @@
 class ParleyCardMousemove3D {
   private readonly SECTION_SELECTOR = '.section-parley-account-types';
-  private readonly CARDS_SELECTOR = '.parley-account-types_card-item';
+  private readonly CARDS_SELECTOR = '.parley-account-types_card';
   private readonly MOVER_SELECTOR = '.parley-account-types_cursor_component';
   private readonly MAX_ROT_Y = 40; // max ±Y tilt in degrees
   private readonly MAX_ROT_X = 20; // max ±X tilt in degrees
@@ -17,6 +17,7 @@ class ParleyCardMousemove3D {
   private cardSetRotY: Array<(v: number) => void> = [];
   private cardSetRotX: Array<(v: number) => void> = [];
   private mouseMoveHandler: (e: MouseEvent) => void;
+  private sectionRect: DOMRect | null = null;
 
   constructor() {
     this.winW = window.innerWidth;
@@ -53,6 +54,7 @@ class ParleyCardMousemove3D {
       this.winH = window.innerHeight;
       this.maxDist = Math.hypot(this.winW, this.winH);
       this.updateCardRectBounds();
+      this.updateSectionRect();
     });
 
     // Initial calculation
@@ -62,6 +64,7 @@ class ParleyCardMousemove3D {
     if (this.sectionEl) {
       this.sectionEl.addEventListener('mouseenter', (e) => {
         this.updateCardRectBounds();
+        this.updateSectionRect();
         this.cards.forEach((card, i) => {
           const { rotY, rotX } = this.getCardRotation(i, e as MouseEvent);
           gsap.to(card, {
@@ -99,15 +102,25 @@ class ParleyCardMousemove3D {
     });
   }
 
+  private updateSectionRect() {
+    this.sectionRect = this.sectionEl ? this.sectionEl.getBoundingClientRect() : null;
+  }
+
   private _mouseMoveHandler(e: MouseEvent) {
-    const mx = e.clientX;
-    const my = e.clientY;
-    // Move the fixed cursor component
+    // Always get the latest section rect for scroll-robustness
+    let mx = e.clientX;
+    let my = e.clientY;
+    if (this.sectionEl) {
+      this.sectionRect = this.sectionEl.getBoundingClientRect();
+      mx = e.clientX - this.sectionRect.left;
+      my = e.clientY - this.sectionRect.top;
+    }
+    // Move the fixed cursor component relative to the section
     if (this.moverSetX && this.moverSetY) {
       this.moverSetX(mx);
       this.moverSetY(my);
     }
-    // "look-at" rotation for each card
+    // "look-at" rotation for each card (unchanged)
     this.cards.forEach((card, i) => {
       const { rotY, rotX } = this.getCardRotation(i, e);
       this.cardSetRotY[i](rotY);
