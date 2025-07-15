@@ -48,6 +48,8 @@ class ParleyCardStagger {
         const shadowEl = slot.querySelector(this.SHADOW_WRAP_SELECTOR);
         const labelTime = slotIndex * this.STAGGER;
 
+        slot.appendChild(card);
+
         const flipTween = Flip.from(state, {
           targets: card,
           duration: this.CARD_DURATION,
@@ -56,8 +58,6 @@ class ParleyCardStagger {
           absolute: true,
           props: 'filter,opacity,transform',
         });
-
-        slot.appendChild(card);
 
         tl.addLabel(`card_${i}`, labelTime);
 
