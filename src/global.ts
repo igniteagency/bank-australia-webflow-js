@@ -1,8 +1,10 @@
+import '$components/dialog-modal';
 import '$utils/alpine-webflow';
 import { initBugHerd } from '$utils/bugherd-script';
 import { LazyLoadVideoEmbeds } from '$utils/lazy-load-video-embeds';
 
 import { setImageCardAriaLabel } from './components/image-card';
+import { linkExternal } from './link-external';
 
 document.addEventListener('DOMContentLoaded', () => {
   gsap.registerPlugin(ScrollTrigger);
@@ -14,6 +16,7 @@ window.Webflow.push(() => {
   disableWebflowScroll();
   setImageCardAriaLabel();
   initBugHerd();
+  linkExternal();
 });
 
 /**
