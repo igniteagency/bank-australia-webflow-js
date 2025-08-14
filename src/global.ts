@@ -1,3 +1,4 @@
+import '$components/dialog-modal';
 import '$utils/alpine-webflow';
 import { initBugHerd } from '$utils/bugherd-script';
 import { LazyLoadVideoEmbeds } from '$utils/lazy-load-video-embeds';
