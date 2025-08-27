@@ -1,13 +1,13 @@
 if (window.SCRIPTS_ENV === 'dev') {
-  window.loadLocalScript('http://localhost:3000/pages/parley-card/scroll-stagger.js');
+  window.loadLocalScript('http://localhost:3000/pages/evo-card/scroll-stagger.js');
 } else {
   (() => {
-  // src/pages/parley-card/scroll-stagger.ts
-  var ParleyCardStagger = class {
-    FROM_CARDS_SELECTOR = ".parley-card-showcase_cards-start .parley-card-showcase_start-card";
-    TO_SLOTS_SELECTOR = ".parley-card-showcase_cards-end .parley-card-showcase_end-card";
-    SHADOW_WRAP_SELECTOR = ".parley-card_shadow-wrap";
-    CARDS_TO_TRIGGER_SELECTOR = ".parley-card-showcase_cards-end";
+  // src/pages/evo-card/scroll-stagger.ts
+  var EvoCardStagger = class {
+    FROM_CARDS_SELECTOR = ".evo-card-showcase_cards-start .evo-card-showcase_start-card";
+    TO_SLOTS_SELECTOR = ".evo-card-showcase_cards-end .evo-card-showcase_end-card";
+    SHADOW_WRAP_SELECTOR = ".evo-card_shadow-wrap";
+    CARDS_TO_TRIGGER_SELECTOR = ".evo-card-showcase_cards-end";
     CARD_DURATION = 0.6;
     STAGGER = 0.15;
     SHADOW_START_AT = 0.8;
@@ -116,7 +116,7 @@ if (window.SCRIPTS_ENV === 'dev') {
   };
   window.Webflow ||= [];
   window.Webflow.push(() => {
-    new ParleyCardStagger();
+    new EvoCardStagger();
   });
 })();
 }

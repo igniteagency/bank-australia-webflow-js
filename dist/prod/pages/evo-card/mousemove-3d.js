@@ -1,12 +1,12 @@
 if (window.SCRIPTS_ENV === 'dev') {
-  window.loadLocalScript('http://localhost:3000/pages/parley-card/mousemove-3d.js');
+  window.loadLocalScript('http://localhost:3000/pages/evo-card/mousemove-3d.js');
 } else {
   (() => {
-  // src/pages/parley-card/mousemove-3d.ts
-  var ParleyCardMousemove3D = class {
-    SECTION_SELECTOR = ".section-parley-account-types";
-    CARDS_SELECTOR = ".parley-account-types_card";
-    MOVER_SELECTOR = ".parley-account-types_cursor_component";
+  // src/pages/evo-card/mousemove-3d.ts
+  var EvoCardMousemove3D = class {
+    SECTION_SELECTOR = ".section-evo-card-types";
+    CARDS_SELECTOR = ".evo-card-types_card";
+    MOVER_SELECTOR = ".evo-card-types_cursor_component";
     MAX_ROT_Y = 40;
     // max ±Y tilt in degrees
     MAX_ROT_X = 20;
@@ -134,7 +134,7 @@ if (window.SCRIPTS_ENV === 'dev') {
   };
   window.Webflow ||= [];
   window.Webflow.push(() => {
-    new ParleyCardMousemove3D();
+    new EvoCardMousemove3D();
   });
 })();
 }
