@@ -1,12 +1,12 @@
 if (window.SCRIPTS_ENV === 'dev') {
-  window.loadLocalScript('http://localhost:3000/pages/evo-card/chart-animation.js');
+  window.loadLocalScript('http://localhost:3000/pages/eco-card/chart-animation.js');
 } else {
   (() => {
-  // src/pages/evo-card/chart-animation.ts
+  // src/pages/eco-card/chart-animation.ts
   function animateChartOnScroll() {
-    const chart = document.querySelector(".evo-card-change_chart");
-    const pointerLines = document.querySelectorAll(".evo-card-change_stat-pointer-line");
-    const statItems = document.querySelectorAll(".evo-card-change_stat-item");
+    const chart = document.querySelector(".eco-card-change_chart");
+    const pointerLines = document.querySelectorAll(".eco-card-change_stat-pointer-line");
+    const statItems = document.querySelectorAll(".eco-card-change_stat-item");
     if (!chart || pointerLines.length === 0 || statItems.length === 0) return;
     gsap.set(chart, {
       "--_chart-fill-percent": "0%"

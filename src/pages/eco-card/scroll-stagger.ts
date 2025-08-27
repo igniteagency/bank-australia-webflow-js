@@ -1,9 +1,9 @@
-class EvoCardStagger {
+class EcoCardStagger {
   private readonly FROM_CARDS_SELECTOR =
-    '.evo-card-showcase_cards-start .evo-card-showcase_start-card';
-  private readonly TO_SLOTS_SELECTOR = '.evo-card-showcase_cards-end .evo-card-showcase_end-card';
-  private readonly SHADOW_WRAP_SELECTOR = '.evo-card_shadow-wrap';
-  private readonly CARDS_TO_TRIGGER_SELECTOR = '.evo-card-showcase_cards-end';
+    '.eco-card-showcase_cards-start .eco-card-showcase_start-card';
+  private readonly TO_SLOTS_SELECTOR = '.eco-card-showcase_cards-end .eco-card-showcase_end-card';
+  private readonly SHADOW_WRAP_SELECTOR = '.eco-card_shadow-wrap';
+  private readonly CARDS_TO_TRIGGER_SELECTOR = '.eco-card-showcase_cards-end';
   private CARD_DURATION = 0.6;
   private STAGGER = 0.15;
   private SHADOW_START_AT = 0.8;
@@ -138,5 +138,5 @@ class EvoCardStagger {
 
 window.Webflow ||= [];
 window.Webflow.push(() => {
-  new EvoCardStagger();
+  new EcoCardStagger();
 });

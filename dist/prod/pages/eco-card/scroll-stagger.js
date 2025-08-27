@@ -1,13 +1,13 @@
 if (window.SCRIPTS_ENV === 'dev') {
-  window.loadLocalScript('http://localhost:3000/pages/evo-card/scroll-stagger.js');
+  window.loadLocalScript('http://localhost:3000/pages/eco-card/scroll-stagger.js');
 } else {
   (() => {
-  // src/pages/evo-card/scroll-stagger.ts
-  var EvoCardStagger = class {
-    FROM_CARDS_SELECTOR = ".evo-card-showcase_cards-start .evo-card-showcase_start-card";
-    TO_SLOTS_SELECTOR = ".evo-card-showcase_cards-end .evo-card-showcase_end-card";
-    SHADOW_WRAP_SELECTOR = ".evo-card_shadow-wrap";
-    CARDS_TO_TRIGGER_SELECTOR = ".evo-card-showcase_cards-end";
+  // src/pages/eco-card/scroll-stagger.ts
+  var EcoCardStagger = class {
+    FROM_CARDS_SELECTOR = ".eco-card-showcase_cards-start .eco-card-showcase_start-card";
+    TO_SLOTS_SELECTOR = ".eco-card-showcase_cards-end .eco-card-showcase_end-card";
+    SHADOW_WRAP_SELECTOR = ".eco-card_shadow-wrap";
+    CARDS_TO_TRIGGER_SELECTOR = ".eco-card-showcase_cards-end";
     CARD_DURATION = 0.6;
     STAGGER = 0.15;
     SHADOW_START_AT = 0.8;
@@ -116,7 +116,7 @@ if (window.SCRIPTS_ENV === 'dev') {
   };
   window.Webflow ||= [];
   window.Webflow.push(() => {
-    new EvoCardStagger();
+    new EcoCardStagger();
   });
 })();
 }
