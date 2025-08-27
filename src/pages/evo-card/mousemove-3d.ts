@@ -1,7 +1,7 @@
-class ParleyCardMousemove3D {
-  private readonly SECTION_SELECTOR = '.section-parley-account-types';
-  private readonly CARDS_SELECTOR = '.parley-account-types_card';
-  private readonly MOVER_SELECTOR = '.parley-account-types_cursor_component';
+class EvoCardMousemove3D {
+  private readonly SECTION_SELECTOR = '.section-evo-card-types';
+  private readonly CARDS_SELECTOR = '.evo-card-types_card';
+  private readonly MOVER_SELECTOR = '.evo-card-types_cursor_component';
   private readonly MAX_ROT_Y = 40; // max ±Y tilt in degrees
   private readonly MAX_ROT_X = 20; // max ±X tilt in degrees
 
@@ -150,5 +150,5 @@ class ParleyCardMousemove3D {
 
 window.Webflow ||= [];
 window.Webflow.push(() => {
-  new ParleyCardMousemove3D();
+  new EvoCardMousemove3D();
 });

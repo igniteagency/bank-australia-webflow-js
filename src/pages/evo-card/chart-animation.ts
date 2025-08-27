@@ -1,7 +1,7 @@
 function animateChartOnScroll() {
-  const chart = document.querySelector('.parley-change_chart');
-  const pointerLines = document.querySelectorAll('.parley-change_stat-pointer-line');
-  const statItems = document.querySelectorAll('.parley-change_stat-item');
+  const chart = document.querySelector('.evo-card-change_chart');
+  const pointerLines = document.querySelectorAll('.evo-card-change_stat-pointer-line');
+  const statItems = document.querySelectorAll('.evo-card-change_stat-item');
   if (!chart || pointerLines.length === 0 || statItems.length === 0) return;
 
   // Set initial states
