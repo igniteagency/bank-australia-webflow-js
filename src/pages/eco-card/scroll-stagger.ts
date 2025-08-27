@@ -1,10 +1,9 @@
-class ParleyCardStagger {
+class EcoCardStagger {
   private readonly FROM_CARDS_SELECTOR =
-    '.parley-card-showcase_cards-start .parley-card-showcase_start-card';
-  private readonly TO_SLOTS_SELECTOR =
-    '.parley-card-showcase_cards-end .parley-card-showcase_end-card';
-  private readonly SHADOW_WRAP_SELECTOR = '.parley-card_shadow-wrap';
-  private readonly CARDS_TO_TRIGGER_SELECTOR = '.parley-card-showcase_cards-end';
+    '.eco-card-showcase_cards-start .eco-card-showcase_start-card';
+  private readonly TO_SLOTS_SELECTOR = '.eco-card-showcase_cards-end .eco-card-showcase_end-card';
+  private readonly SHADOW_WRAP_SELECTOR = '.eco-card_shadow-wrap';
+  private readonly CARDS_TO_TRIGGER_SELECTOR = '.eco-card-showcase_cards-end';
   private CARD_DURATION = 0.6;
   private STAGGER = 0.15;
   private SHADOW_START_AT = 0.8;
@@ -48,6 +47,8 @@ class ParleyCardStagger {
         const shadowEl = slot.querySelector(this.SHADOW_WRAP_SELECTOR);
         const labelTime = slotIndex * this.STAGGER;
 
+        slot.appendChild(card);
+
         const flipTween = Flip.from(state, {
           targets: card,
           duration: this.CARD_DURATION,
@@ -56,8 +57,6 @@ class ParleyCardStagger {
           absolute: true,
           props: 'filter,opacity,transform',
         });
-
-        slot.appendChild(card);
 
         tl.addLabel(`card_${i}`, labelTime);
 
@@ -105,7 +104,7 @@ class ParleyCardStagger {
           animation: tl,
           trigger: cardsToTrigger,
           start: 'top+=15% bottom',
-          end: 'bottom bottom',
+          end: 'bottom 60%',
           scrub: true,
           markers: window.IS_DEBUG_MODE,
           id: `card-section-scrolltrigger`,
@@ -139,5 +138,5 @@ class ParleyCardStagger {
 
 window.Webflow ||= [];
 window.Webflow.push(() => {
-  new ParleyCardStagger();
+  new EcoCardStagger();
 });

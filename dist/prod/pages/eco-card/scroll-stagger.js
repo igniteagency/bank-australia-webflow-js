@@ -1,13 +1,13 @@
 if (window.SCRIPTS_ENV === 'dev') {
-  window.loadLocalScript('http://localhost:3000/pages/parley-card/scroll-stagger.js');
+  window.loadLocalScript('http://localhost:3000/pages/eco-card/scroll-stagger.js');
 } else {
   (() => {
-  // src/pages/parley-card/scroll-stagger.ts
-  var ParleyCardStagger = class {
-    FROM_CARDS_SELECTOR = ".parley-card-showcase_cards-start .parley-card-showcase_start-card";
-    TO_SLOTS_SELECTOR = ".parley-card-showcase_cards-end .parley-card-showcase_end-card";
-    SHADOW_WRAP_SELECTOR = ".parley-card_shadow-wrap";
-    CARDS_TO_TRIGGER_SELECTOR = ".parley-card-showcase_cards-end";
+  // src/pages/eco-card/scroll-stagger.ts
+  var EcoCardStagger = class {
+    FROM_CARDS_SELECTOR = ".eco-card-showcase_cards-start .eco-card-showcase_start-card";
+    TO_SLOTS_SELECTOR = ".eco-card-showcase_cards-end .eco-card-showcase_end-card";
+    SHADOW_WRAP_SELECTOR = ".eco-card_shadow-wrap";
+    CARDS_TO_TRIGGER_SELECTOR = ".eco-card-showcase_cards-end";
     CARD_DURATION = 0.6;
     STAGGER = 0.15;
     SHADOW_START_AT = 0.8;
@@ -40,6 +40,7 @@ if (window.SCRIPTS_ENV === 'dev') {
           const state = Flip.getState(card, { props: "filter,opacity,transform" });
           const shadowEl = slot.querySelector(this.SHADOW_WRAP_SELECTOR);
           const labelTime = slotIndex * this.STAGGER;
+          slot.appendChild(card);
           const flipTween = Flip.from(state, {
             targets: card,
             duration: this.CARD_DURATION,
@@ -48,7 +49,6 @@ if (window.SCRIPTS_ENV === 'dev') {
             absolute: true,
             props: "filter,opacity,transform"
           });
-          slot.appendChild(card);
           tl.addLabel(`card_${i}`, labelTime);
           tl.add(flipTween, `card_${i}`);
           tl.fromTo(
@@ -85,7 +85,7 @@ if (window.SCRIPTS_ENV === 'dev') {
             animation: tl,
             trigger: cardsToTrigger,
             start: "top+=15% bottom",
-            end: "bottom bottom",
+            end: "bottom 60%",
             scrub: true,
             markers: window.IS_DEBUG_MODE,
             id: `card-section-scrolltrigger`,
@@ -116,7 +116,7 @@ if (window.SCRIPTS_ENV === 'dev') {
   };
   window.Webflow ||= [];
   window.Webflow.push(() => {
-    new ParleyCardStagger();
+    new EcoCardStagger();
   });
 })();
 }
