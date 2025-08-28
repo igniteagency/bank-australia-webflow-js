@@ -1,15 +1,18 @@
 class EcoCardStagger {
   private readonly FROM_CARDS_SELECTOR =
     '.eco-card-showcase_cards-start .eco-card-showcase_start-card';
+  private readonly START_CARDS_WRAPPER_SELECTOR = '.eco-card-showcase_start-card-wrapper';
   private readonly TO_SLOTS_SELECTOR = '.eco-card-showcase_cards-end .eco-card-showcase_end-card';
   private readonly SHADOW_WRAP_SELECTOR = '.eco-card_shadow-wrap';
   private readonly CARDS_TO_TRIGGER_SELECTOR = '.eco-card-showcase_cards-end';
-  private CARD_DURATION = 0.6;
-  private STAGGER = 0.15;
-  private SHADOW_START_AT = 0.8;
+  private readonly CARD_DURATION = 0.6;
+  private readonly STAGGER = 0.15;
+  private readonly SHADOW_START_AT = 0.8;
 
   private fromCards: HTMLElement[];
   private toSlots: HTMLElement[];
+
+  private flipCtx: gsap.Context | null = null;
 
   constructor() {
     this.fromCards = gsap.utils.toArray(this.FROM_CARDS_SELECTOR);
@@ -21,20 +24,43 @@ class EcoCardStagger {
   }
 
   private setupCardAnimation() {
-    window.IS_DEBUG_MODE && console.debug('Setting up First Animation (Cards to Slots)...');
+    window.IS_DEBUG_MODE && console.debug('Setting up eco card stagger animation');
+
+    this.flipCtx && this.flipCtx.revert();
+
+    // Reset DOM positions before re-initializing
+    const originalContainerList = document.querySelectorAll(this.START_CARDS_WRAPPER_SELECTOR);
+    if (originalContainerList.length > 0) {
+      this.fromCards.forEach((card, i) => {
+        gsap.set(card, { clearProps: 'all' });
+        originalContainerList[i].appendChild(card);
+      });
+    }
+
+    const cardsToTrigger = document.querySelector(this.CARDS_TO_TRIGGER_SELECTOR);
 
     if (
-      this.fromCards.length > 0 &&
-      this.toSlots.length > 0 &&
-      this.fromCards.length <= this.toSlots.length
+      this.fromCards.length <= 0 ||
+      this.toSlots.length <= 0 ||
+      this.fromCards.length > this.toSlots.length ||
+      !cardsToTrigger
     ) {
-      if (window.IS_DEBUG_MODE) {
-        console.debug('Conditions met for First Animation setup.');
-      }
+      console.debug(
+        'Conditions NOT met for First Animation setup. fromCards.length:',
+        this.fromCards.length,
+        'toSlots.length:',
+        this.toSlots.length
+      );
+      return;
+    }
+
+    this.flipCtx = gsap.context(() => {
       const tl = gsap.timeline({ paused: true });
       const last = this.fromCards.length - 1;
 
       this.fromCards.forEach((card, i) => {
+        gsap.set(card, { rotateY: 0, clearProps: 'all' });
+
         const slotIndex = last - i;
         const slot = this.toSlots[slotIndex];
         if (!slot) {
@@ -64,7 +90,7 @@ class EcoCardStagger {
 
         tl.fromTo(
           card,
-          { rotateY: 0, transformOrigin: 'center center' },
+          { rotateY: 0 },
           { rotateY: -50, duration: this.CARD_DURATION, ease: 'power1.inOut' },
           `card_${i}`
         );
@@ -92,46 +118,27 @@ class EcoCardStagger {
         }
       });
 
-      const cardsToTrigger = document.querySelector(this.CARDS_TO_TRIGGER_SELECTOR);
-
-      if (cardsToTrigger) {
-        window.IS_DEBUG_MODE &&
-          console.debug(
-            `First Animation: Creating ScrollTrigger for '${this.CARDS_TO_TRIGGER_SELECTOR}'`
-          );
-
-        ScrollTrigger.create({
-          animation: tl,
-          trigger: cardsToTrigger,
-          start: 'top+=15% bottom',
-          end: 'bottom 60%',
-          scrub: true,
-          markers: window.IS_DEBUG_MODE,
-          id: `card-section-scrolltrigger`,
-          invalidateOnRefresh: true,
-        });
-      } else {
-        console.warn(
-          `First Animation: '${this.CARDS_TO_TRIGGER_SELECTOR}' trigger not found for ScrollTrigger.`
-        );
-      }
-    } else {
-      console.debug(
-        'Conditions NOT met for First Animation setup. fromCards.length:',
-        this.fromCards.length,
-        'toSlots.length:',
-        this.toSlots.length
-      );
-    }
+      ScrollTrigger.create({
+        animation: tl,
+        trigger: cardsToTrigger,
+        start: 'top+=15% bottom',
+        end: 'bottom 60%',
+        scrub: 1, // Add smoothing
+        markers: window.IS_DEBUG_MODE,
+        id: `card-section-scrolltrigger`,
+      });
+    });
   }
 
   private setupScrollTriggerRefresh() {
     window.addEventListener('load', () => {
-      ScrollTrigger.refresh();
+      this.setupCardAnimation();
     });
 
+    let resizeTimeout: number;
     window.addEventListener('resize', () => {
-      ScrollTrigger.refresh();
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => this.setupCardAnimation(), 200);
     });
   }
 }
