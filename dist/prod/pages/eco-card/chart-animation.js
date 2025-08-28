@@ -5,11 +5,13 @@ if (window.SCRIPTS_ENV === 'dev') {
   // src/pages/eco-card/chart-animation.ts
   function animateChartOnScroll() {
     const chart = document.querySelector(".eco-card-change_chart");
+    const fillPercentVar = "--_chart-fill-percent";
+    const fillPercent = chart?.style.getPropertyValue(fillPercentVar) || "64%";
     const pointerLines = document.querySelectorAll(".eco-card-change_stat-pointer-line");
     const statItems = document.querySelectorAll(".eco-card-change_stat-item");
     if (!chart || pointerLines.length === 0 || statItems.length === 0) return;
     gsap.set(chart, {
-      "--_chart-fill-percent": "0%"
+      [fillPercentVar]: "0%"
     });
     gsap.set(pointerLines, {
       scaleX: 0,
@@ -26,7 +28,7 @@ if (window.SCRIPTS_ENV === 'dev') {
       }
     });
     tl.to(chart, {
-      "--_chart-fill-percent": "81%",
+      [fillPercentVar]: fillPercent,
       duration: 1.5,
       ease: "power2.out"
     }).to(
