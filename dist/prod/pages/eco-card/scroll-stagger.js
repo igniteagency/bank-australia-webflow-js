@@ -15,6 +15,7 @@ if (window.SCRIPTS_ENV === 'dev') {
     fromCards;
     toSlots;
     flipCtx = null;
+    lastWindowWidth = window.innerWidth;
     constructor() {
       this.fromCards = gsap.utils.toArray(this.FROM_CARDS_SELECTOR);
       this.toSlots = gsap.utils.toArray(this.TO_SLOTS_SELECTOR);
@@ -112,8 +113,12 @@ if (window.SCRIPTS_ENV === 'dev') {
       });
       let resizeTimeout;
       window.addEventListener("resize", () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => this.setupCardAnimation(), 200);
+        const currentWidth = window.innerWidth;
+        if (currentWidth !== this.lastWindowWidth) {
+          this.lastWindowWidth = currentWidth;
+          clearTimeout(resizeTimeout);
+          resizeTimeout = setTimeout(() => this.setupCardAnimation(), 200);
+        }
       });
     }
   };

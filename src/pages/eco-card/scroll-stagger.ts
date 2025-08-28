@@ -13,6 +13,7 @@ class EcoCardStagger {
   private toSlots: HTMLElement[];
 
   private flipCtx: gsap.Context | null = null;
+  private lastWindowWidth = window.innerWidth;
 
   constructor() {
     this.fromCards = gsap.utils.toArray(this.FROM_CARDS_SELECTOR);
@@ -137,8 +138,12 @@ class EcoCardStagger {
 
     let resizeTimeout: number;
     window.addEventListener('resize', () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => this.setupCardAnimation(), 200);
+      const currentWidth = window.innerWidth;
+      if (currentWidth !== this.lastWindowWidth) {
+        this.lastWindowWidth = currentWidth;
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => this.setupCardAnimation(), 200);
+      }
     });
   }
 }
