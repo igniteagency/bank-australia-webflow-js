@@ -56,77 +56,79 @@ class EcoCardStagger {
     }
 
     this.flipCtx = gsap.context(() => {
-      const tl = gsap.timeline({ paused: true });
-      const last = this.fromCards.length - 1;
+      gsap.matchMedia().add('(min-width: 480px)', () => {
+        const tl = gsap.timeline({ paused: true });
+        const last = this.fromCards.length - 1;
 
-      this.fromCards.forEach((card, i) => {
-        gsap.set(card, { rotateY: 0, clearProps: 'all' });
+        this.fromCards.forEach((card, i) => {
+          gsap.set(card, { rotateY: 0, clearProps: 'all' });
 
-        const slotIndex = last - i;
-        const slot = this.toSlots[slotIndex];
-        if (!slot) {
-          console.warn(
-            `First Animation: Slot with index ${slotIndex} not found for card ${i}. Skipping.`
+          const slotIndex = last - i;
+          const slot = this.toSlots[slotIndex];
+          if (!slot) {
+            console.warn(
+              `First Animation: Slot with index ${slotIndex} not found for card ${i}. Skipping.`
+            );
+            return;
+          }
+          const state = Flip.getState(card, { props: 'filter,opacity,transform' });
+          const shadowEl = slot.querySelector(this.SHADOW_WRAP_SELECTOR);
+          const labelTime = slotIndex * this.STAGGER;
+
+          slot.appendChild(card);
+
+          const flipTween = Flip.from(state, {
+            targets: card,
+            duration: this.CARD_DURATION,
+            ease: 'power1.inOut',
+            scale: true,
+            absolute: true,
+            props: 'filter,opacity,transform',
+          });
+
+          tl.addLabel(`card_${i}`, labelTime);
+
+          tl.add(flipTween, `card_${i}`);
+
+          tl.fromTo(
+            card,
+            { rotateY: 0 },
+            { rotateY: -50, duration: this.CARD_DURATION, ease: 'power1.inOut' },
+            `card_${i}`
           );
-          return;
-        }
-        const state = Flip.getState(card, { props: 'filter,opacity,transform' });
-        const shadowEl = slot.querySelector(this.SHADOW_WRAP_SELECTOR);
-        const labelTime = slotIndex * this.STAGGER;
 
-        slot.appendChild(card);
-
-        const flipTween = Flip.from(state, {
-          targets: card,
-          duration: this.CARD_DURATION,
-          ease: 'power1.inOut',
-          scale: true,
-          absolute: true,
-          props: 'filter,opacity,transform',
+          if (shadowEl) {
+            gsap.set(shadowEl, { opacity: 0, filter: 'blur(100px)' });
+            flipTween.eventCallback('onUpdate', () => {
+              const p = flipTween.progress();
+              // MODIFIED Z-INDEX LOGIC:
+              // Sets zIndex to 'auto' when scrolling down past SHADOW_START_AT
+              // Clears inline zIndex (reverting to CSS) when scrolling up past SHADOW_START_AT
+              if (p >= this.SHADOW_START_AT) {
+                gsap.set(slot, { zIndex: 'auto' });
+              } else {
+                gsap.set(slot, { clearProps: 'zIndex' }); // Reverts to CSS defined z-index
+              }
+              const alpha = gsap.utils.clamp(
+                0,
+                1,
+                (p - this.SHADOW_START_AT) / (1 - this.SHADOW_START_AT)
+              );
+              const blurValue = 100 * (1 - alpha);
+              gsap.set(shadowEl, { opacity: alpha, filter: `blur(${blurValue}px)` });
+            });
+          }
         });
 
-        tl.addLabel(`card_${i}`, labelTime);
-
-        tl.add(flipTween, `card_${i}`);
-
-        tl.fromTo(
-          card,
-          { rotateY: 0 },
-          { rotateY: -50, duration: this.CARD_DURATION, ease: 'power1.inOut' },
-          `card_${i}`
-        );
-
-        if (shadowEl) {
-          gsap.set(shadowEl, { opacity: 0, filter: 'blur(100px)' });
-          flipTween.eventCallback('onUpdate', () => {
-            const p = flipTween.progress();
-            // MODIFIED Z-INDEX LOGIC:
-            // Sets zIndex to 'auto' when scrolling down past SHADOW_START_AT
-            // Clears inline zIndex (reverting to CSS) when scrolling up past SHADOW_START_AT
-            if (p >= this.SHADOW_START_AT) {
-              gsap.set(slot, { zIndex: 'auto' });
-            } else {
-              gsap.set(slot, { clearProps: 'zIndex' }); // Reverts to CSS defined z-index
-            }
-            const alpha = gsap.utils.clamp(
-              0,
-              1,
-              (p - this.SHADOW_START_AT) / (1 - this.SHADOW_START_AT)
-            );
-            const blurValue = 100 * (1 - alpha);
-            gsap.set(shadowEl, { opacity: alpha, filter: `blur(${blurValue}px)` });
-          });
-        }
-      });
-
-      ScrollTrigger.create({
-        animation: tl,
-        trigger: cardsToTrigger,
-        start: 'top+=15% bottom',
-        end: 'bottom 60%',
-        scrub: 1, // Add smoothing
-        markers: window.IS_DEBUG_MODE,
-        id: `card-section-scrolltrigger`,
+        ScrollTrigger.create({
+          animation: tl,
+          trigger: cardsToTrigger,
+          start: 'top+=15% bottom',
+          end: 'bottom 60%',
+          scrub: 1, // Add smoothing
+          markers: window.IS_DEBUG_MODE,
+          id: `card-section-scrolltrigger`,
+        });
       });
     });
   }
