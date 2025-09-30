@@ -1,3 +1,4 @@
+import backToTopButton from '$components/back-to-top-button';
 import '$components/dialog-modal';
 import '$utils/alpine-webflow';
 import { initBugHerd } from '$utils/bugherd-script';
@@ -17,6 +18,7 @@ window.Webflow.push(() => {
   setImageCardAriaLabel();
   initBugHerd();
   linkExternal();
+  backToTopButton();
 });
 
 /**
