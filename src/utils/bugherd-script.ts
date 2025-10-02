@@ -8,7 +8,7 @@ export function initBugHerd(): void {
   if (currentHostname.includes('webflow.io') && window.IG_BUGHERD_ENABLED === true) {
     window
       .loadExternalScript(
-        'https://www.bugherd.com/sidebarv2.js?apikey=alf2xg3pewxzwvuoe7c00g',
+        'https://www.bugherd.com/sidebarv2.js?apikey=r4xfxgb2dksugnkkxhxdhg',
         'body',
         false
       )
