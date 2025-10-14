@@ -3,15 +3,16 @@ import type { AlpineComponent } from 'alpinejs';
 import { STATES_LIST_WITH_PRICES } from './states-price-list';
 
 interface EligibilityMissCounter {
-  initialCriteria: number;
-  incomeCap: number;
-  priceCap: number;
+  initialCriteria?: number;
+  incomeCap?: number;
+  priceCap?: number;
+  depositTest?: number;
   /**
    * Loan to Annual Income comparison
    */
-  dtiTest: number;
-  canManageLoan: number;
-  haveEnoughFunds: number;
+  dtiTest?: number;
+  canManageLoan?: number;
+  haveEnoughFunds?: number;
 }
 
 type ApplicantType = 'single' | 'joint' | undefined;
@@ -29,6 +30,7 @@ interface FormComponent {
    * This helps concretely determine if the user is eligible or not
    */
   eligibilityMissCount: EligibilityMissCounter;
+  showEligibilityVerdict: boolean;
   eligible: boolean;
 
   /**
@@ -61,8 +63,8 @@ interface FormComponent {
   /**
    * Step 3
    */
-  canManageLoan: boolean;
-  haveEnoughFunds: boolean;
+  canManageLoan?: boolean;
+  haveEnoughFunds?: boolean;
 
   get statesList(): typeof STATES_LIST_WITH_PRICES;
   get currentLocationsList(): { name: string; price: number }[] | '';
@@ -71,6 +73,7 @@ interface FormComponent {
    * Sets watchers on all reactive properties to determine eligibility
    */
   init(): void;
+  updateIncomeEligibility(): void;
   /**
    * Reacts on changes to state/location, loan type, purchase price, user contribution
    */
@@ -82,14 +85,16 @@ window.addEventListener('alpine:init', () => {
   window.Alpine.data('helpToBuyEligibilityForm', function () {
     return {
       eligibilityMissCount: {
-        initialCriteria: 1,
-        incomeCap: 1,
-        priceCap: 1,
-        dtiTest: 1,
-        canManageLoan: 1,
-        haveEnoughFunds: 1,
+        initialCriteria: undefined,
+        incomeCap: undefined,
+        priceCap: undefined,
+        depositTest: undefined,
+        dtiTest: undefined,
+        canManageLoan: undefined,
+        haveEnoughFunds: undefined,
       },
       eligible: false,
+      showEligibilityVerdict: false,
 
       minIncomeRequired: {
         single: 100000,
@@ -101,6 +106,7 @@ window.addEventListener('alpine:init', () => {
       isSingleParent: undefined,
       applicantOneIncome: undefined,
       applicantTwoIncome: undefined,
+      totalIncome: undefined,
 
       selectedState: '',
       selectedLocation: '',
@@ -112,8 +118,8 @@ window.addEventListener('alpine:init', () => {
       maxGovContribution: undefined,
       personalLoanAmount: undefined,
 
-      canManageLoan: false,
-      haveEnoughFunds: false,
+      canManageLoan: undefined,
+      haveEnoughFunds: undefined,
 
       get statesList() {
         return STATES_LIST_WITH_PRICES;
@@ -121,7 +127,7 @@ window.addEventListener('alpine:init', () => {
 
       get currentLocationsList() {
         const state = this.selectedStateObj;
-        return state ? state.locations : '';
+        return state?.locations || '';
       },
 
       get selectedStateObj() {
@@ -142,18 +148,13 @@ window.addEventListener('alpine:init', () => {
           }
         });
 
-        this.$watch(
-          'applicantOneIncome, applicantTwoIncome',
-          ([incomeOne, incomeTwo]: [number | undefined, number | undefined]) => {
-            this.totalIncome = (incomeOne || 0) + (incomeTwo || 0);
-            const maxIncomeCap =
-              this.applicantType === 'single' && !this.isSingleParent
-                ? this.minIncomeRequired.single
-                : this.minIncomeRequired.joint;
-
-            this.eligibilityMissCount.incomeCap = this.totalIncome <= maxIncomeCap ? 0 : 1;
-          }
+        this.$watch('applicantType, isSingleParent, applicantOneIncome, applicantTwoIncome', () =>
+          this.updateIncomeEligibility()
         );
+
+        this.$watch('selectedState', (value: string) => {
+          this.selectedLocation = '';
+        });
 
         this.$watch(
           'selectedState, selectedLocation, homeType, expectedPurchasePrice, userContribution',
@@ -169,10 +170,20 @@ window.addEventListener('alpine:init', () => {
         });
       },
 
+      updateIncomeEligibility() {
+        this.totalIncome = (this.applicantOneIncome || 0) + (this.applicantTwoIncome || 0);
+        const maxIncomeCap =
+          this.applicantType === 'single' && !this.isSingleParent
+            ? this.minIncomeRequired.single
+            : this.minIncomeRequired.joint;
+
+        this.eligibilityMissCount.incomeCap = this.totalIncome <= maxIncomeCap ? 0 : 1;
+      },
+
       onHomeDetailsChange() {
         const state = this.selectedStateObj;
         if (!state) {
-          this.priceCap = 0;
+          this.priceCap = undefined;
           this.maxGovContribution = 0;
           this.personalLoanAmount = 0;
           this.eligibilityMissCount.priceCap = 1;
@@ -184,24 +195,49 @@ window.addEventListener('alpine:init', () => {
           const location = state.locations.find((l) => l.name === this.selectedLocation);
           priceCap = location ? location.price : 0;
         } else if ('price' in state) {
+          this.selectedLocation = '';
           priceCap = state.price || 0;
         }
 
         this.priceCap = priceCap;
+
+        if (!this.expectedPurchasePrice || !this.userContribution) {
+          this.maxGovContribution = 0;
+          this.personalLoanAmount = 0;
+          this.eligibilityMissCount.priceCap = 1;
+          this.eligibilityMissCount.depositTest = 1;
+          this.eligibilityMissCount.dtiTest = 1;
+          return;
+        }
+
         this.maxGovContribution =
-          this.homeType === 'new' ? this.priceCap * 0.4 : this.priceCap * 0.3;
+          this.homeType === 'new'
+            ? this.expectedPurchasePrice * 0.4
+            : this.expectedPurchasePrice * 0.3;
+
         this.personalLoanAmount = Math.max(
           this.expectedPurchasePrice - this.userContribution - this.maxGovContribution,
           0
         );
 
         this.eligibilityMissCount.priceCap = this.expectedPurchasePrice <= priceCap ? 0 : 1;
+        // minimum 2% of the price cap
+        this.eligibilityMissCount.depositTest =
+          this.userContribution > this.priceCap * 0.02 ? 0 : 1;
         this.eligibilityMissCount.dtiTest =
           this.personalLoanAmount / (this.totalIncome || 1) <= 6 ? 0 : 1;
       },
 
       calculateEligibility() {
-        const totalMissCount = Object.values(this.eligibilityMissCount).reduce((a, b) => a + b, 0);
+        const allValues = Object.values(this.eligibilityMissCount);
+        if (allValues.some((v) => v === undefined)) {
+          this.showEligibilityVerdict = false;
+          this.eligible = false;
+          return;
+        }
+
+        this.showEligibilityVerdict = true;
+        const totalMissCount = allValues.reduce((a, b) => a + b, 0);
         this.eligible = totalMissCount > 0 ? false : true;
       },
     } as AlpineComponent<FormComponent>;
