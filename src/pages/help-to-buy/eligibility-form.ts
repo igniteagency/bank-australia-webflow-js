@@ -1,14 +1,20 @@
 import type { AlpineComponent } from 'alpinejs';
 
-import { STATES_PRICES_LIST } from './states-price-list';
+import { STATES_LIST_WITH_PRICES } from './states-price-list';
 
 interface EligibilityMissCounter {
   initialCriteria: number;
   incomeCap: number;
   priceCap: number;
+  /**
+   * Loan to Annual Income comparison
+   */
+  dtiTest: number;
   canManageLoan: number;
   haveEnoughFunds: number;
 }
+
+type ApplicantType = 'single' | 'joint' | undefined;
 
 interface MinParentIncomeRequirement {
   single: number;
@@ -28,12 +34,14 @@ interface FormComponent {
   /**
    * Step 1
    */
-  initialCriteriaMet: boolean;
-  applicantType: 'single' | 'joint';
-  isSingleParent: boolean;
-  applicantOneIncome: number;
-  applicantTwoIncome: number | undefined;
+  initialCriteriaMet?: boolean;
+  applicantType: ApplicantType;
+  isSingleParent?: boolean;
+  applicantOneIncome?: number;
+  applicantTwoIncome?: number;
+  totalIncome?: number;
 
+  // Pre-set
   minIncomeRequired: MinParentIncomeRequirement;
 
   /**
@@ -42,13 +50,13 @@ interface FormComponent {
   selectedState: string | '';
   selectedLocation: string | '';
   homeType: 'established' | 'new';
-  expectedPurchasePrice: number;
-  userContribution: number;
+  expectedPurchasePrice?: number;
+  userContribution?: number;
 
   // Derived
-  priceCap: number;
-  maxGovContribution: number;
-  personalLoanAmount: number;
+  priceCap?: number;
+  maxGovContribution?: number;
+  personalLoanAmount?: number;
 
   /**
    * Step 3
@@ -56,8 +64,9 @@ interface FormComponent {
   canManageLoan: boolean;
   haveEnoughFunds: boolean;
 
-  get statesPricesList(): typeof STATES_PRICES_LIST;
-  get locationsList(): { name: string; price: number }[] | '';
+  get statesList(): typeof STATES_LIST_WITH_PRICES;
+  get currentLocationsList(): { name: string; price: number }[] | '';
+  get selectedStateObj(): (typeof STATES_LIST_WITH_PRICES)[0] | undefined;
   /**
    * Sets watchers on all reactive properties to determine eligibility
    */
@@ -70,14 +79,15 @@ interface FormComponent {
 }
 
 window.addEventListener('alpine:init', () => {
-  window.Alpine.data('helpToBuySchemeForm', function () {
+  window.Alpine.data('helpToBuyEligibilityForm', function () {
     return {
       eligibilityMissCount: {
-        initialCriteria: 0,
-        incomeCap: 0,
-        priceCap: 0,
-        canManageLoan: 0,
-        haveEnoughFunds: 0,
+        initialCriteria: 1,
+        incomeCap: 1,
+        priceCap: 1,
+        dtiTest: 1,
+        canManageLoan: 1,
+        haveEnoughFunds: 1,
       },
       eligible: false,
 
@@ -86,32 +96,36 @@ window.addEventListener('alpine:init', () => {
         joint: 160000,
       },
 
-      initialCriteriaMet: false,
-      applicantType: 'single',
-      isSingleParent: false,
-      applicantOneIncome: 0,
+      initialCriteriaMet: undefined,
+      applicantType: undefined,
+      isSingleParent: undefined,
+      applicantOneIncome: undefined,
       applicantTwoIncome: undefined,
 
       selectedState: '',
       selectedLocation: '',
       homeType: 'established',
-      expectedPurchasePrice: 0,
-      userContribution: 0,
+      expectedPurchasePrice: undefined,
+      userContribution: undefined,
 
-      priceCap: 0,
-      maxGovContribution: 0,
-      personalLoanAmount: 0,
+      priceCap: undefined,
+      maxGovContribution: undefined,
+      personalLoanAmount: undefined,
 
       canManageLoan: false,
       haveEnoughFunds: false,
 
-      get statesPricesList() {
-        return STATES_PRICES_LIST;
+      get statesList() {
+        return STATES_LIST_WITH_PRICES;
       },
 
-      get locationsList() {
-        const state = this.statesPricesList.find((s) => s.state === this.selectedState);
+      get currentLocationsList() {
+        const state = this.selectedStateObj;
         return state ? state.locations : '';
+      },
+
+      get selectedStateObj() {
+        return this.statesList.find((s) => s.name === this.selectedState);
       },
 
       init() {
@@ -122,23 +136,22 @@ window.addEventListener('alpine:init', () => {
           this.eligibilityMissCount.initialCriteria = value ? 0 : 1;
         });
 
-        this.$watch('applicantType', (value: 'single' | 'joint') => {
+        this.$watch('applicantType', (value: ApplicantType) => {
           if (value === 'single') {
             this.applicantTwoIncome = undefined;
           }
-          this.eligibilityMissCount.incomeCap = 0; // reset
         });
 
         this.$watch(
           'applicantOneIncome, applicantTwoIncome',
-          ([incomeOne, incomeTwo]: [number, number | undefined]) => {
-            const totalIncome = incomeOne + (incomeTwo || 0);
-            const requiredIncome =
-              this.applicantType === 'single'
+          ([incomeOne, incomeTwo]: [number | undefined, number | undefined]) => {
+            this.totalIncome = (incomeOne || 0) + (incomeTwo || 0);
+            const maxIncomeCap =
+              this.applicantType === 'single' && !this.isSingleParent
                 ? this.minIncomeRequired.single
                 : this.minIncomeRequired.joint;
 
-            this.eligibilityMissCount.incomeCap = totalIncome >= requiredIncome ? 0 : 1;
+            this.eligibilityMissCount.incomeCap = this.totalIncome <= maxIncomeCap ? 0 : 1;
           }
         );
 
@@ -157,7 +170,7 @@ window.addEventListener('alpine:init', () => {
       },
 
       onHomeDetailsChange() {
-        const state = this.statesPricesList.find((s) => s.state === this.selectedState);
+        const state = this.selectedStateObj;
         if (!state) {
           this.priceCap = 0;
           this.maxGovContribution = 0;
@@ -176,16 +189,15 @@ window.addEventListener('alpine:init', () => {
 
         this.priceCap = priceCap;
         this.maxGovContribution =
-          this.homeType === 'new'
-            ? Math.min(this.expectedPurchasePrice * 0.2, 50000, priceCap * 0.2)
-            : Math.min(this.expectedPurchasePrice * 0.1, 25000, priceCap * 0.1);
+          this.homeType === 'new' ? this.priceCap * 0.4 : this.priceCap * 0.3;
         this.personalLoanAmount = Math.max(
           this.expectedPurchasePrice - this.userContribution - this.maxGovContribution,
           0
         );
 
-        this.eligibilityMissCount.priceCap =
-          this.expectedPurchasePrice > 0 && this.expectedPurchasePrice <= priceCap ? 0 : 1;
+        this.eligibilityMissCount.priceCap = this.expectedPurchasePrice <= priceCap ? 0 : 1;
+        this.eligibilityMissCount.dtiTest =
+          this.personalLoanAmount / (this.totalIncome || 1) <= 6 ? 0 : 1;
       },
 
       calculateEligibility() {

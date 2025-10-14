@@ -1,7 +1,7 @@
 // all states in australia
-export const STATES_PRICES_LIST = [
+export const STATES_LIST_WITH_PRICES = [
   {
-    state: 'New South Wales',
+    name: 'New South Wales',
     locations: [
       { name: 'Sydney', price: 1300000 },
       { name: 'Newcastle and Lake Macquarie', price: 1300000 },
@@ -14,7 +14,7 @@ export const STATES_PRICES_LIST = [
     ],
   },
   {
-    state: 'Victoria',
+    name: 'Victoria',
     locations: [
       { name: 'Melbourne', price: 950000 },
       { name: 'Geelong', price: 950000 },
@@ -22,7 +22,7 @@ export const STATES_PRICES_LIST = [
     ],
   },
   {
-    state: 'Queensland',
+    name: 'Queensland',
     locations: [
       { name: 'Brisbane', price: 1000000 },
       { name: 'Gold Coast', price: 1000000 },
@@ -31,40 +31,40 @@ export const STATES_PRICES_LIST = [
     ],
   },
   // {
-  //   state: 'South Australia',
+  //   name: 'South Australia',
   //   locations: [
   //     { name: 'Adelaide', price: 900000 },
   //     { name: 'Other areas', price: 500000 },
   //   ],
   // },
   // {
-  //   state: 'Western Australia',
+  //   name: 'Western Australia',
   //   locations: [
   //     { name: 'Perth', price: 850000 },
   //     { name: 'Other areas', price: 600000 },
   //   ],
   // },
   // {
-  //   state: 'Tasmania',
+  //   name: 'Tasmania',
   //   locations: [
   //     { name: 'Hobart', price: 700000 },
   //     { name: 'Other areas', price: 550000 },
   //   ],
   // },
   {
-    state: 'Northern Territory',
+    name: 'Northern Territory',
     price: 600000,
   },
   {
-    state: 'Australian Capital Territory',
+    name: 'Australian Capital Territory',
     price: 1000000,
   },
   {
-    state: 'Jervis Bay Territory and Norfolk Island',
+    name: 'Jervis Bay Territory and Norfolk Island',
     price: 550000,
   },
   {
-    state: 'Christmas Island and Cocos (Keeling) Islands',
+    name: 'Christmas Island and Cocos (Keeling) Islands',
     price: 400000,
   },
 ];
