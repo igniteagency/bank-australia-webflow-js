@@ -39,8 +39,8 @@ interface FormComponent {
   initialCriteriaMet?: boolean;
   applicantType: ApplicantType;
   isSingleParent?: boolean;
-  applicantOneIncome?: number;
-  applicantTwoIncome?: number;
+  applicantOneIncome?: string;
+  applicantTwoIncome?: string;
   totalIncome?: number;
 
   // Pre-set
@@ -52,8 +52,8 @@ interface FormComponent {
   selectedState: string | '';
   selectedLocation: string | '';
   homeType: 'established' | 'new';
-  expectedPurchasePrice?: number;
-  userContribution?: number;
+  expectedPurchasePrice?: string;
+  userContribution?: string;
 
   // Derived
   priceCap?: number;
@@ -79,6 +79,8 @@ interface FormComponent {
    */
   onHomeDetailsChange(): void;
   calculateEligibility(): void;
+  parseNumber(value: string | number): number;
+  moneyFormat(value: number | undefined): string;
 }
 
 window.addEventListener('alpine:init', () => {
@@ -171,7 +173,9 @@ window.addEventListener('alpine:init', () => {
       },
 
       updateIncomeEligibility() {
-        this.totalIncome = (this.applicantOneIncome || 0) + (this.applicantTwoIncome || 0);
+        this.totalIncome =
+          this.parseNumber(this.applicantOneIncome || 0) +
+          this.parseNumber(this.applicantTwoIncome || 0);
         const maxIncomeCap =
           this.applicantType === 'single' && !this.isSingleParent
             ? this.minIncomeRequired.single
@@ -210,20 +214,20 @@ window.addEventListener('alpine:init', () => {
           return;
         }
 
+        const expectedPurchasePrice = this.parseNumber(this.expectedPurchasePrice);
+        const userContribution = this.parseNumber(this.userContribution);
+
         this.maxGovContribution =
-          this.homeType === 'new'
-            ? this.expectedPurchasePrice * 0.4
-            : this.expectedPurchasePrice * 0.3;
+          this.homeType === 'new' ? expectedPurchasePrice * 0.4 : expectedPurchasePrice * 0.3;
 
         this.personalLoanAmount = Math.max(
-          this.expectedPurchasePrice - this.userContribution - this.maxGovContribution,
+          expectedPurchasePrice - userContribution - this.maxGovContribution,
           0
         );
 
-        this.eligibilityMissCount.priceCap = this.expectedPurchasePrice <= priceCap ? 0 : 1;
+        this.eligibilityMissCount.priceCap = expectedPurchasePrice <= priceCap ? 0 : 1;
         // minimum 2% of the price cap
-        this.eligibilityMissCount.depositTest =
-          this.userContribution > this.priceCap * 0.02 ? 0 : 1;
+        this.eligibilityMissCount.depositTest = userContribution > this.priceCap * 0.02 ? 0 : 1;
         this.eligibilityMissCount.dtiTest =
           this.personalLoanAmount / (this.totalIncome || 1) <= 6 ? 0 : 1;
       },
@@ -239,6 +243,27 @@ window.addEventListener('alpine:init', () => {
         this.showEligibilityVerdict = true;
         const totalMissCount = allValues.reduce((a, b) => a + b, 0);
         this.eligible = totalMissCount > 0 ? false : true;
+      },
+
+      moneyFormat(value: number | undefined) {
+        if (value === undefined) return '';
+        return value.toLocaleString('en-AU', {
+          style: 'currency',
+          currency: 'AUD',
+          maximumFractionDigits: 0,
+        });
+      },
+
+      /**
+       * Converts a number string with commas to a number datatype
+       * @param value - String with commas, e.g., "1,000,000"
+       * @returns Number without commas, e.g., 1000000
+       */
+      parseNumber(value: string): number {
+        if (!value) return 0;
+        const cleanedValue = value.replace(/,/g, '');
+        const parsed = parseFloat(cleanedValue);
+        return isNaN(parsed) ? 0 : parsed;
       },
     } as AlpineComponent<FormComponent>;
   });
