@@ -225,7 +225,7 @@ window.addEventListener('alpine:init', () => {
 
         this.eligibilityMissCount.priceCap = expectedPurchasePrice <= priceCap ? 0 : 1;
         // minimum 2% of the price cap
-        this.eligibilityMissCount.depositTest = userContribution > this.priceCap * 0.02 ? 0 : 1;
+        this.eligibilityMissCount.depositTest = userContribution >= this.priceCap * 0.02 ? 0 : 1;
         this.eligibilityMissCount.dtiTest =
           this.personalLoanAmount / (this.totalIncome || 1) <= 6 ? 0 : 1;
       },
