@@ -75,6 +75,10 @@ if (window.SCRIPTS_ENV === 'dev') {
 
   // src/pages/help-to-buy/eligibility-form.ts
   window.addEventListener("alpine:init", () => {
+    const MAX_INCOME = {
+      single: 1e5,
+      joint: 16e4
+    };
     window.Alpine.data("helpToBuyEligibilityForm", function() {
       return {
         eligibilityMissCount: {
@@ -88,10 +92,7 @@ if (window.SCRIPTS_ENV === 'dev') {
         },
         eligible: false,
         showEligibilityVerdict: false,
-        minIncomeRequired: {
-          single: 1e5,
-          joint: 16e4
-        },
+        maxIncomeLimit: MAX_INCOME.single,
         initialCriteriaMet: void 0,
         applicantType: void 0,
         isSingleParent: void 0,
@@ -113,6 +114,9 @@ if (window.SCRIPTS_ENV === 'dev') {
         },
         get currentLocationsList() {
           const state = this.selectedStateObj;
+          if (!state?.locations) {
+            this.selectedLocation = "";
+          }
           return state?.locations || "";
         },
         get selectedStateObj() {
@@ -129,11 +133,12 @@ if (window.SCRIPTS_ENV === 'dev') {
               this.applicantTwoIncome = void 0;
             }
           });
-          this.$watch(
-            "applicantType, isSingleParent, applicantOneIncome, applicantTwoIncome",
-            () => this.updateIncomeEligibility()
-          );
-          this.$watch("selectedState", (value) => {
+          this.$watch("applicantType, isSingleParent, applicantOneIncome, applicantTwoIncome", () => {
+            this.totalIncome = this.parseNumber(this.applicantOneIncome || 0) + this.parseNumber(this.applicantTwoIncome || 0);
+            this.maxIncomeLimit = this.applicantType === "single" && !this.isSingleParent ? MAX_INCOME.single : MAX_INCOME.joint;
+            this.eligibilityMissCount.incomeCap = this.totalIncome <= this.maxIncomeLimit ? 0 : 1;
+          });
+          this.$watch("selectedState", () => {
             this.selectedLocation = "";
           });
           this.$watch(
@@ -146,11 +151,6 @@ if (window.SCRIPTS_ENV === 'dev') {
           this.$watch("haveEnoughFunds", (value) => {
             this.eligibilityMissCount.haveEnoughFunds = value ? 0 : 1;
           });
-        },
-        updateIncomeEligibility() {
-          this.totalIncome = (this.applicantOneIncome || 0) + (this.applicantTwoIncome || 0);
-          const maxIncomeCap = this.applicantType === "single" && !this.isSingleParent ? this.minIncomeRequired.single : this.minIncomeRequired.joint;
-          this.eligibilityMissCount.incomeCap = this.totalIncome <= maxIncomeCap ? 0 : 1;
         },
         onHomeDetailsChange() {
           const state = this.selectedStateObj;
@@ -178,13 +178,15 @@ if (window.SCRIPTS_ENV === 'dev') {
             this.eligibilityMissCount.dtiTest = 1;
             return;
           }
-          this.maxGovContribution = this.homeType === "new" ? this.expectedPurchasePrice * 0.4 : this.expectedPurchasePrice * 0.3;
+          const expectedPurchasePrice = this.parseNumber(this.expectedPurchasePrice);
+          const userContribution = this.parseNumber(this.userContribution);
+          this.maxGovContribution = this.homeType === "new" ? expectedPurchasePrice * 0.4 : expectedPurchasePrice * 0.3;
           this.personalLoanAmount = Math.max(
-            this.expectedPurchasePrice - this.userContribution - this.maxGovContribution,
+            expectedPurchasePrice - userContribution - this.maxGovContribution,
             0
           );
-          this.eligibilityMissCount.priceCap = this.expectedPurchasePrice <= priceCap ? 0 : 1;
-          this.eligibilityMissCount.depositTest = this.userContribution > this.priceCap * 0.02 ? 0 : 1;
+          this.eligibilityMissCount.priceCap = expectedPurchasePrice <= priceCap ? 0 : 1;
+          this.eligibilityMissCount.depositTest = userContribution >= expectedPurchasePrice * 0.02 ? 0 : 1;
           this.eligibilityMissCount.dtiTest = this.personalLoanAmount / (this.totalIncome || 1) <= 6 ? 0 : 1;
         },
         calculateEligibility() {
@@ -197,6 +199,25 @@ if (window.SCRIPTS_ENV === 'dev') {
           this.showEligibilityVerdict = true;
           const totalMissCount = allValues.reduce((a, b) => a + b, 0);
           this.eligible = totalMissCount > 0 ? false : true;
+        },
+        moneyFormat(value) {
+          if (value === void 0) return "";
+          return value.toLocaleString("en-AU", {
+            style: "currency",
+            currency: "AUD",
+            maximumFractionDigits: 0
+          });
+        },
+        /**
+         * Converts a number string with commas to a number datatype
+         * @param value - String with commas, e.g., "1,000,000"
+         * @returns Number without commas, e.g., 1000000
+         */
+        parseNumber(value) {
+          if (!value) return 0;
+          const cleanedValue = value.replace(/,/g, "");
+          const parsed = parseFloat(cleanedValue);
+          return isNaN(parsed) ? 0 : parsed;
         }
       };
     });

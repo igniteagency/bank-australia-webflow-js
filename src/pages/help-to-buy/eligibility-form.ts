@@ -68,7 +68,6 @@ interface FormComponent {
    * Sets watchers on all reactive properties to determine eligibility
    */
   init(): void;
-  updateIncomeEligibility(): void;
   /**
    * Reacts on changes to state/location, loan type, purchase price, user contribution
    */
@@ -126,6 +125,9 @@ window.addEventListener('alpine:init', () => {
 
       get currentLocationsList() {
         const state = this.selectedStateObj;
+        if (!state?.locations) {
+          this.selectedLocation = '';
+        }
         return state?.locations || '';
       },
 
@@ -147,11 +149,20 @@ window.addEventListener('alpine:init', () => {
           }
         });
 
-        this.$watch('applicantType, isSingleParent, applicantOneIncome, applicantTwoIncome', () =>
-          this.updateIncomeEligibility()
-        );
+        this.$watch('applicantType, isSingleParent, applicantOneIncome, applicantTwoIncome', () => {
+          this.totalIncome =
+            this.parseNumber(this.applicantOneIncome || 0) +
+            this.parseNumber(this.applicantTwoIncome || 0);
 
-        this.$watch('selectedState', (value: string) => {
+          this.maxIncomeLimit =
+            this.applicantType === 'single' && !this.isSingleParent
+              ? MAX_INCOME.single
+              : MAX_INCOME.joint;
+
+          this.eligibilityMissCount.incomeCap = this.totalIncome <= this.maxIncomeLimit ? 0 : 1;
+        });
+
+        this.$watch('selectedState', () => {
           this.selectedLocation = '';
         });
 
@@ -167,19 +178,6 @@ window.addEventListener('alpine:init', () => {
         this.$watch('haveEnoughFunds', (value: boolean) => {
           this.eligibilityMissCount.haveEnoughFunds = value ? 0 : 1;
         });
-      },
-
-      updateIncomeEligibility() {
-        this.totalIncome =
-          this.parseNumber(this.applicantOneIncome || 0) +
-          this.parseNumber(this.applicantTwoIncome || 0);
-
-        this.maxIncomeLimit =
-          this.applicantType === 'single' && !this.isSingleParent
-            ? MAX_INCOME.single
-            : MAX_INCOME.joint;
-
-        this.eligibilityMissCount.incomeCap = this.totalIncome <= this.maxIncomeLimit ? 0 : 1;
       },
 
       onHomeDetailsChange() {
@@ -224,8 +222,9 @@ window.addEventListener('alpine:init', () => {
         );
 
         this.eligibilityMissCount.priceCap = expectedPurchasePrice <= priceCap ? 0 : 1;
-        // minimum 2% of the price cap
-        this.eligibilityMissCount.depositTest = userContribution > this.priceCap * 0.02 ? 0 : 1;
+        // minimum 2% of the expected purchase price
+        this.eligibilityMissCount.depositTest =
+          userContribution >= expectedPurchasePrice * 0.02 ? 0 : 1;
         this.eligibilityMissCount.dtiTest =
           this.personalLoanAmount / (this.totalIncome || 1) <= 6 ? 0 : 1;
       },
