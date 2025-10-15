@@ -57,8 +57,6 @@ if (window.SCRIPTS_ENV === 'dev') {
             if (suffix.includes(":")) {
               newA = prefix + ":" + suffix.replace(/:/g, ".");
             }
-          } else {
-            newA = m[1] + m[2].replace(/:/g, ".");
           }
           if (newA) {
             el.setAttribute(newA, a.value);
