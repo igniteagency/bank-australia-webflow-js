@@ -17,11 +17,6 @@ interface EligibilityMissCounter {
 
 type ApplicantType = 'single' | 'joint' | undefined;
 
-interface MinParentIncomeRequirement {
-  single: number;
-  joint: number;
-}
-
 interface FormComponent {
   // Derived calcs
   /**
@@ -44,7 +39,7 @@ interface FormComponent {
   totalIncome?: number;
 
   // Pre-set
-  minIncomeRequired: MinParentIncomeRequirement;
+  maxIncomeLimit: number;
 
   /**
    * Step 2
@@ -84,6 +79,11 @@ interface FormComponent {
 }
 
 window.addEventListener('alpine:init', () => {
+  const MAX_INCOME = {
+    single: 100000,
+    joint: 160000,
+  };
+
   window.Alpine.data('helpToBuyEligibilityForm', function () {
     return {
       eligibilityMissCount: {
@@ -98,10 +98,7 @@ window.addEventListener('alpine:init', () => {
       eligible: false,
       showEligibilityVerdict: false,
 
-      minIncomeRequired: {
-        single: 100000,
-        joint: 160000,
-      },
+      maxIncomeLimit: MAX_INCOME.single,
 
       initialCriteriaMet: undefined,
       applicantType: undefined,
@@ -176,12 +173,13 @@ window.addEventListener('alpine:init', () => {
         this.totalIncome =
           this.parseNumber(this.applicantOneIncome || 0) +
           this.parseNumber(this.applicantTwoIncome || 0);
-        const maxIncomeCap =
-          this.applicantType === 'single' && !this.isSingleParent
-            ? this.minIncomeRequired.single
-            : this.minIncomeRequired.joint;
 
-        this.eligibilityMissCount.incomeCap = this.totalIncome <= maxIncomeCap ? 0 : 1;
+        this.maxIncomeLimit =
+          this.applicantType === 'single' && !this.isSingleParent
+            ? MAX_INCOME.single
+            : MAX_INCOME.joint;
+
+        this.eligibilityMissCount.incomeCap = this.totalIncome <= this.maxIncomeLimit ? 0 : 1;
       },
 
       onHomeDetailsChange() {
