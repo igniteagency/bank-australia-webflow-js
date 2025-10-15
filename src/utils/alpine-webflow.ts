@@ -71,8 +71,6 @@ class AlpineJSWebflow {
           if (suffix.includes(':')) {
             newA = prefix + ':' + suffix.replace(/:/g, '.');
           }
-        } else {
-          newA = m[1] + m[2].replace(/:/g, '.');
         }
         if (newA) {
           el.setAttribute(newA, a.value);
