@@ -137,6 +137,7 @@ if (window.SCRIPTS_ENV === 'dev') {
             this.totalIncome = this.parseNumber(this.applicantOneIncome || 0) + this.parseNumber(this.applicantTwoIncome || 0);
             this.maxIncomeLimit = this.applicantType === "single" && !this.isSingleParent ? MAX_INCOME.single : MAX_INCOME.joint;
             this.eligibilityMissCount.incomeCap = this.totalIncome <= this.maxIncomeLimit ? 0 : 1;
+            this.runDTITest();
           });
           this.$watch("selectedState", () => {
             this.selectedLocation = "";
@@ -187,6 +188,13 @@ if (window.SCRIPTS_ENV === 'dev') {
           );
           this.eligibilityMissCount.priceCap = expectedPurchasePrice <= priceCap ? 0 : 1;
           this.eligibilityMissCount.depositTest = userContribution >= expectedPurchasePrice * 0.02 ? 0 : 1;
+          this.runDTITest();
+        },
+        runDTITest() {
+          if (!this.personalLoanAmount || !this.totalIncome || this.personalLoanAmount <= 0) {
+            this.eligibilityMissCount.dtiTest = 1;
+            return;
+          }
           this.eligibilityMissCount.dtiTest = this.personalLoanAmount / (this.totalIncome || 1) <= 6 ? 0 : 1;
         },
         calculateEligibility() {

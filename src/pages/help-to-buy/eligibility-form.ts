@@ -72,6 +72,7 @@ interface FormComponent {
    * Reacts on changes to state/location, loan type, purchase price, user contribution
    */
   onHomeDetailsChange(): void;
+  runDTITest(): void;
   calculateEligibility(): void;
   parseNumber(value: string | number): number;
   moneyFormat(value: number | undefined): string;
@@ -160,6 +161,8 @@ window.addEventListener('alpine:init', () => {
               : MAX_INCOME.joint;
 
           this.eligibilityMissCount.incomeCap = this.totalIncome <= this.maxIncomeLimit ? 0 : 1;
+
+          this.runDTITest();
         });
 
         this.$watch('selectedState', () => {
@@ -225,6 +228,15 @@ window.addEventListener('alpine:init', () => {
         // minimum 2% of the expected purchase price
         this.eligibilityMissCount.depositTest =
           userContribution >= expectedPurchasePrice * 0.02 ? 0 : 1;
+
+        this.runDTITest();
+      },
+
+      runDTITest() {
+        if (!this.personalLoanAmount || !this.totalIncome || this.personalLoanAmount <= 0) {
+          this.eligibilityMissCount.dtiTest = 1;
+          return;
+        }
         this.eligibilityMissCount.dtiTest =
           this.personalLoanAmount / (this.totalIncome || 1) <= 6 ? 0 : 1;
       },
