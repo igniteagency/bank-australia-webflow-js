@@ -2,12 +2,15 @@ class QuickExit {
   safeURL: string;
   private shiftCount = 0;
   private lastShiftTime = 0;
-  private readonly SHIFT_TIMEOUT = 1200; // ms
-  private liveRegionEl?: HTMLElement;
+  private readonly SHIFT_TIMEOUT = 1000; // ms
+  private shiftTimer: number | null = null;
+  private liveRegionEl: HTMLElement | null;
+  private shiftCounterEl: HTMLElement | null;
 
   constructor() {
     this.safeURL = 'https://www.bom.gov.au';
-    this.liveRegionEl = this.getLiveRegion();
+    this.liveRegionEl = document.getElementById('quick-exit-live-region');
+    this.shiftCounterEl = document.getElementById('quick-exit-shift-press-count');
     this.init();
     this.initKeyboardShortcut();
   }
@@ -19,15 +22,6 @@ class QuickExit {
         this.triggerQuickExit();
       });
     }
-  }
-
-  /**
-   * Creates an aria-live region in the DOM
-   * It's inserted into document.body at start and kept empty until needed.
-   */
-  private getLiveRegion() {
-    const existing = document.getElementById('quick-exit-live-region');
-    if (existing) return existing;
   }
 
   /**
@@ -57,6 +51,18 @@ class QuickExit {
         }
         this.lastShiftTime = now;
 
+        // show counter
+        this.shiftCounterEl?.removeAttribute('hidden');
+
+        this.clearShiftTimer();
+
+        this.shiftTimer = window.setTimeout(() => {
+          this.shiftCount = 0;
+          this.shiftCounterEl?.setAttribute('hidden', 'hidden');
+          this.shiftCounterEl && (this.shiftCounterEl.textContent = '');
+          this.shiftTimer = null;
+        }, this.SHIFT_TIMEOUT);
+
         // Announce progress
         if (this.shiftCount === 1) {
           this.announce('Shift pressed once.');
@@ -64,11 +70,14 @@ class QuickExit {
           this.announce('Shift pressed twice.');
         } else if (this.shiftCount === 3) {
           this.announce('Exit shortcut activated.');
+          // clear timer since sequence completed
+          this.clearShiftTimer();
           this.triggerQuickExit();
         }
+        this.shiftCounterEl && (this.shiftCounterEl.textContent = `.`.repeat(this.shiftCount));
       } else {
         // reset if other key pressed
-        this.shiftCount = 0;
+        this.resetShiftSequence();
       }
     });
   }
@@ -79,6 +88,21 @@ class QuickExit {
 
     // Navigate replacing the current session history entry
     window.location.replace(this.safeURL);
+  }
+
+  private clearShiftTimer() {
+    // ensure any existing timer is cleared, then start a new one to expire the sequence
+    if (this.shiftTimer) {
+      clearTimeout(this.shiftTimer);
+      this.shiftTimer = null;
+    }
+  }
+
+  private resetShiftSequence() {
+    this.shiftCount = 0;
+    this.shiftCounterEl?.setAttribute('hidden', 'hidden');
+    this.shiftCounterEl && (this.shiftCounterEl.textContent = '');
+    this.clearShiftTimer();
   }
 }
 
