@@ -1,5 +1,6 @@
 import backToTopButton from '$components/back-to-top-button';
 import '$components/dialog-modal';
+import IconImage from '$components/icon-image';
 import '$utils/alpine-webflow';
 import { initBugHerd } from '$utils/bugherd-script';
 import { LazyLoadVideoEmbeds } from '$utils/lazy-load-video-embeds';
@@ -9,6 +10,7 @@ import { linkExternal } from './link-external';
 
 document.addEventListener('DOMContentLoaded', () => {
   gsap.registerPlugin(ScrollTrigger);
+  new IconImage();
   new LazyLoadVideoEmbeds().init();
 });
 
