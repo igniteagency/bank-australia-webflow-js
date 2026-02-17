@@ -299,6 +299,7 @@
     initialiseDisclosureWidgets();
 
     if (event.matches) {
+      // Desktop
       navContent?.removeAttribute('hidden');
       navButton?.setAttribute('hidden', '');
       navCloseButton?.setAttribute('hidden', '');
@@ -315,6 +316,7 @@
 
       navButton?.removeEventListener('click', navButtonOnClick);
     } else {
+      // Tablet and mobile
       navButton?.removeAttribute('hidden');
       navCloseButton?.removeAttribute('hidden');
       searchLinkText?.classList.remove('visually-hidden');
